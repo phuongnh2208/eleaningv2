@@ -1,5 +1,6 @@
 /* eslint-disable */
 import { IsEmail, IsNotEmpty, MinLength, IsEnum, IsOptional } from 'class-validator';
+import { Role, Status } from 'src/generated/prisma/client';
 
 export class UpdateUserDto {
     @IsOptional()
@@ -13,10 +14,10 @@ export class UpdateUserDto {
     password?: string;
 
     @IsOptional()
-    @IsEnum(["ADMIN", "USER"], {message: "quyền phải là ADMIN hoặc USER"})
-    role?: string;
+    @IsEnum(Role, {message: "quyền phải là ADMIN hoặc USER"})
+    role?: Role;
     
     @IsOptional()
-    @IsEnum(["ACTIVE", "BANNED"], {message: "trạng thái phải là ACTIVE hoặc BANNED"})
-    status?: string;
+    @IsEnum(Status, {message: "trạng thái phải là ACTIVE hoặc BANNED"})
+    status?: Status;
 }
