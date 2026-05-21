@@ -5,13 +5,15 @@ import { UserModule } from '../users/user.module';
 import { LoginUseCase } from './use-cases/login.usecase';
 import { BcyptPasswordHasherStrategy } from './strategies/bcrypt-password-hasher.strategy';
 import { PasswordHasherStrategy } from './strategies/password-hasher.strategy';
-import { JwtModule, JwtService } from '@nestjs/jwt';
+import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { AuthTokenFactory } from './factories/auth-token.factory';
 
 @Module({
   providers: [
     RegisterUseCase,
     LoginUseCase,
+    AuthTokenFactory,
     BcyptPasswordHasherStrategy,
     {
       provide: PasswordHasherStrategy,

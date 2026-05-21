@@ -1,18 +1,17 @@
 import { Injectable } from '@nestjs/common';
 import { UserRepository } from 'src/modules/repositories/user.repository';
 import { LoginDto } from '../dto/login.dto';
-import { UserMapper } from 'src/modules/users/mappers/user.mapper';
 import { AuthError } from '../constants/auth.errors';
 import { AppException } from 'src/common/exceptions/app.exception';
 import { PasswordHasherStrategy } from '../strategies/password-hasher.strategy';
-import { JwtService } from '@nestjs/jwt';
+import { AuthTokenFactory } from '../factories/auth-token.factory';
 
 @Injectable()
 export class LoginUseCase {
   constructor(
     private readonly useRepository: UserRepository,
     private readonly passwordHasherStrategy: PasswordHasherStrategy,
-    private readonly jwtService: JwtService,
+    private readonly authTokenFactory: AuthTokenFactory,
   ) {}
   async excutive(data: LoginDto) {
     const user = await this.useRepository.findByEmail(data.email);
@@ -24,14 +23,6 @@ export class LoginUseCase {
     );
     if (!isPasswordCorrect)
       throw new AppException(AuthError.INVALID_CREDENTIALS);
-    const accessToken = await this.jwtService.signAsync({
-      sub: user.id,
-      email: user.email,
-      role: user.role,
-    });
-    return {
-      accessToken,
-      user: UserMapper.toResponse(user),
-    };
+    return await this.authTokenFactory.createLoginResponse(user);
   }
 }
