@@ -25,6 +25,12 @@ enum Status {
   BANNED
 }
 
+enum SessionStatus {
+  ACTIVE
+  REVOKED
+  EXPIRED
+}
+
 model User {
   id              Int @id @default(autoincrement())
   email           String @unique
@@ -33,4 +39,15 @@ model User {
   status          Status  @default(ACTIVE)
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
+  session         Session[] 
+}
+
+model Session {
+  id                  Int @id @default(autoincrement())
+  userId              Int 
+  refreshTokenHash    String
+  status              SessionStatus @default(ACTIVE)
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+  user                User @relation(fields: [userId], references: [id], onDelete: Cascade) 
 }

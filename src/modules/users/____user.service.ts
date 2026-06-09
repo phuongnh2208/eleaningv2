@@ -3,8 +3,8 @@ import { Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserMapper } from './mappers/user.mapper';
-import { UserRepository } from '../repositories/user.repository';
-import { UpdateRepositoryInput } from '../repositories/types/update-user-repository.input';
+import { UserRepository } from './repositories/user.repository';
+import { UpdateRepositoryInput } from './repositories/types/update-user-repository.input';
 
 @Injectable()
 export class UserService {
