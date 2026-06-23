@@ -9,6 +9,8 @@ import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AuthTokenFactory } from './factories/auth-token.factory';
 import { SessionRepository } from '../sessions/repositories/session.repository';
+import { RefreshTokenUsecase } from './use-cases/refresh-token.usecase';
+import { LogoutUsecase } from './use-cases/logout.usecase';
 
 @Module({
   providers: [
@@ -16,6 +18,8 @@ import { SessionRepository } from '../sessions/repositories/session.repository';
     LoginUseCase,
     AuthTokenFactory,
     SessionRepository,
+    LogoutUsecase,
+    RefreshTokenUsecase,
     BcyptPasswordHasherStrategy,
     {
       provide: PasswordHasherStrategy,

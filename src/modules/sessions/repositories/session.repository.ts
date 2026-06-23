@@ -1,5 +1,3 @@
-/* eslint-disable */
-
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
 import { SessionStatus } from 'src/generated/prisma/client';

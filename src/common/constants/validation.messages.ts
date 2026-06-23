@@ -19,4 +19,9 @@ export const ValidationMessage = {
     REQUIRED: 'Trạng thái không được để trống',
     INVALID: 'Trạng thái phải là ACTIVE hoặc BANNED',
   },
+
+  REFRESH_TOKEN: {
+    REQUIRED: 'Refresh token không được để trống',
+    MUST_BE_STRING: 'Refresh token phải là chuỗi ký tự',
+  },
 } as const; // báo là không được phép thay đổi trong quá trình run time(có thể xóa đi)

@@ -1,4 +1,3 @@
-/* eslint-disable */
 import { Injectable } from '@nestjs/common';
 import { UserRepository } from 'src/modules/users/repositories/user.repository';
 import { LoginDto } from '../dto/login.dto';
