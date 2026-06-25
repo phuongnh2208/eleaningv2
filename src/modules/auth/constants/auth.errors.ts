@@ -42,4 +42,9 @@ export const AuthError = {
     message: 'Token đã hết hạn',
     statusCode: HttpStatus.UNAUTHORIZED,
   },
+  FORBIDDEN: {
+    code: 'AUTH.FORBIDDEN',
+    message: 'Bạn không có quyền thực hiện hành động này',
+    statusCode: HttpStatus.FORBIDDEN,
+  },
 } as const;

@@ -6,12 +6,14 @@ import { FindAllUsersUseCase } from './use-cases/find-all-users.usecase';
 import { FindUserByIdUseCase } from './use-cases/find-user-by-id.usecase';
 import { UpdateUserUseCase } from './use-cases/update-user.usecase';
 import { DeleteUserUseCase } from './use-cases/delete-user.usecase';
+import { JwtStrategy } from '../auth/strategies/jwt/jwt.stratergy';
 
 @Module({
   providers: [
     CreateUserUseCase,
     FindAllUsersUseCase,
     FindUserByIdUseCase,
+    JwtStrategy,
     UpdateUserUseCase,
     DeleteUserUseCase,
     UserRepository,
