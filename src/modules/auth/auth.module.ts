@@ -11,6 +11,7 @@ import { RefreshTokenUsecase } from './use-cases/refresh-token.usecase';
 import { LogoutUsecase } from './use-cases/logout.usecase';
 import { HashingModule } from 'src/common/secret/hashing/hashing.module';
 import { JwtStrategy } from './strategies/jwt/jwt.stratergy';
+import { SessionStateFactory } from '../sessions/states/session-state.factory';
 
 @Module({
   providers: [
@@ -21,6 +22,7 @@ import { JwtStrategy } from './strategies/jwt/jwt.stratergy';
     LogoutUsecase,
     RefreshTokenUsecase,
     JwtStrategy,
+    SessionStateFactory,
   ],
   controllers: [AuthController],
   imports: [

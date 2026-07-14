@@ -5,7 +5,7 @@ import { LoginDto } from './dto/login.dto';
 import { LoginUseCase } from './use-cases/login.usecase';
 import { LogoutUsecase } from './use-cases/logout.usecase';
 import { RefreshTokenUsecase } from './use-cases/refresh-token.usecase';
-import { RefreshTokenDto } from './dto/refresh-token.dto.ts';
+import { RefreshTokenDto } from './dto/refresh-token.dto';
 
 @Controller('auth')
 export class AuthController {

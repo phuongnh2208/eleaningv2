@@ -1,14 +1,15 @@
 /* eslint-disable */
 import { Injectable } from '@nestjs/common';
-import { RefreshTokenDto } from '../dto/refresh-token.dto.ts';
+import { RefreshTokenDto } from '../dto/refresh-token.dto';
 import { JwtService } from '@nestjs/jwt';
 import { UserRepository } from 'src/modules/users/repositories/user.repository';
 import { SessionRepository } from 'src/modules/sessions/repositories/session.repository';
-import { PasswordHasherStrategy } from '../../../common/secret/hashing/password-hasher.strategy.js';
+import { PasswordHasherStrategy } from '../../../common/secret/hashing/password-hasher.strategy';
 import { AppException } from 'src/common/exceptions/app.exception';
 import { AuthError } from '../constants/auth.errors';
 import { SessionStatus } from 'src/generated/prisma/client';
 import { AuthTokenFactory } from '../factories/auth-token.factory';
+import { SessionStateFactory } from 'src/modules/sessions/states/session-state.factory';
 
 @Injectable()
 export class RefreshTokenUsecase {
@@ -18,6 +19,7 @@ export class RefreshTokenUsecase {
     private readonly sessionRepository: SessionRepository,
     private readonly passwordHasherStrategy: PasswordHasherStrategy,
     private readonly authTokenFactory: AuthTokenFactory,
+    private readonly sessionStateFactory: SessionStateFactory,
   ) {}
   async executive(data: RefreshTokenDto) {
     let payload;
@@ -33,10 +35,12 @@ export class RefreshTokenUsecase {
     if (!user) 
         throw new AppException(AuthError.USER_NOT_FOUND);
 
-    const session = await this.sessionRepository.findActiveByUserId(user.id);
+    const session = await this.sessionRepository.findLatestByUserId(user.id);
     if (!session) 
-        throw new AppException(AuthError.ACTIVE_SESSION_NOT_FOUND);
+        throw new AppException(AuthError.SESSION_NOT_FOUND);
 
+    const sessionState = this.sessionStateFactory.create(session.status);
+    sessionState.ensureCanRefresh();
     const isRefreshTokenCorrect = await this.passwordHasherStrategy.compare(
       data.refreshToken,
       session.refreshTokenHash,

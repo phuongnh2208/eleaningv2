@@ -31,9 +31,21 @@ export const AuthError = {
     statusCode: HttpStatus.UNAUTHORIZED,
   },
 
-  ACTIVE_SESSION_NOT_FOUND: {
-    code: 'AUTH.ACTIVE_SESSION_NOT_FOUND',
+  SESSION_NOT_FOUND: {
+    code: 'AUTH.SESSION_NOT_FOUND',
     message: 'Không tìm thấy phiên đăng nhập đang hoạt động',
+    statusCode: HttpStatus.UNAUTHORIZED,
+  },
+
+  SESSION_REVOKED: {
+    code: 'AUTH.SESSION_REVOKED',
+    message: 'Phiên đăng nhập đã bị thu hồi',
+    statusCode: HttpStatus.UNAUTHORIZED,
+  },
+
+  SESSION_EXPIRED: {
+    code: 'AUTH.SESSION_EXPIRED',
+    message: 'Phiên đăng nhập đã hết hạn',
     statusCode: HttpStatus.UNAUTHORIZED,
   },
 

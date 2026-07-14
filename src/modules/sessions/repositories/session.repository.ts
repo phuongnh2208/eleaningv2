@@ -18,6 +18,13 @@ export class SessionRepository {
       },
     });
   }
+  // Lọc ra thằng mới nhất và duy nhất của mỗi trạng thái
+  async findLatestByUserId(userId: number) {
+    return await this.prismaService.session.findFirst({
+      where: { userId },
+      orderBy: { id: 'desc' },
+    });
+  }
   async findActiveByUserId(userId: number) {
     return await this.prismaService.session.findFirst({
       where: {
