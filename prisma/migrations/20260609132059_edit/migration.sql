@@ -1,2 +1,0 @@
--- AlterTable
-ALTER TABLE `session` MODIFY `status` VARCHAR(191) NOT NULL DEFAULT 'ACTIVE';

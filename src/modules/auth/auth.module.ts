@@ -3,14 +3,14 @@ import { RegisterUseCase } from './use-cases/regiser.usecase';
 import { AuthController } from './auth.controller';
 import { UserModule } from '../users/user.module';
 import { LoginUseCase } from './use-cases/login.usecase';
-import { BcyptPasswordHasherStrategy } from './strategies/hashing/bcrypt-password-hasher.strategy';
-import { PasswordHasherStrategy } from './strategies/hashing/password-hasher.strategy';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AuthTokenFactory } from './factories/auth-token.factory';
 import { SessionRepository } from '../sessions/repositories/session.repository';
 import { RefreshTokenUsecase } from './use-cases/refresh-token.usecase';
 import { LogoutUsecase } from './use-cases/logout.usecase';
+import { HashingModule } from 'src/common/secret/hashing/hashing.module';
+import { JwtStrategy } from './strategies/jwt/jwt.stratergy';
 
 @Module({
   providers: [
@@ -20,15 +20,12 @@ import { LogoutUsecase } from './use-cases/logout.usecase';
     SessionRepository,
     LogoutUsecase,
     RefreshTokenUsecase,
-    BcyptPasswordHasherStrategy,
-    {
-      provide: PasswordHasherStrategy,
-      useClass: BcyptPasswordHasherStrategy,
-    },
+    JwtStrategy,
   ],
   controllers: [AuthController],
   imports: [
     UserModule,
+    HashingModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],

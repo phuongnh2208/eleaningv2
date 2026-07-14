@@ -7,6 +7,7 @@ import { FindUserByIdUseCase } from './use-cases/find-user-by-id.usecase';
 import { UpdateUserUseCase } from './use-cases/update-user.usecase';
 import { DeleteUserUseCase } from './use-cases/delete-user.usecase';
 import { JwtStrategy } from '../auth/strategies/jwt/jwt.stratergy';
+import { HashingModule } from 'src/common/secret/hashing/hashing.module';
 
 @Module({
   providers: [
@@ -19,6 +20,7 @@ import { JwtStrategy } from '../auth/strategies/jwt/jwt.stratergy';
     UserRepository,
   ],
   controllers: [UserController],
+  imports: [HashingModule],
   exports: [UserRepository],
 })
 export class UserModule {}

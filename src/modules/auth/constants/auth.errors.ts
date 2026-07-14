@@ -47,4 +47,33 @@ export const AuthError = {
     message: 'Bạn không có quyền thực hiện hành động này',
     statusCode: HttpStatus.FORBIDDEN,
   },
+  CANNOT_UPDATE_OTHER_USER: {
+    code: 'AUTH.CANNOT_UPDATE_OTHER_USER',
+    message: 'Không được phép cập nhật thông tin của người dùng khác',
+    statusCode: HttpStatus.FORBIDDEN,
+  },
+
+  CANNOT_CHANGE_ROLE: {
+    code: 'AUTH.CANNOT_CHANGE_ROLE',
+    message: 'Bạn không có quyền thay đổi vai trò của tài khoản',
+    statusCode: HttpStatus.FORBIDDEN,
+  },
+
+  CANNOT_CHANGE_STATUS: {
+    code: 'AUTH.CANNOT_CHANGE_STATUS',
+    message: 'Bạn không có quyền thay đổi trạng thái của tài khoản',
+    statusCode: HttpStatus.FORBIDDEN,
+  },
+
+  CANNOT_CHANGE_OWN_ROLE: {
+    code: 'AUTH.CANNOT_CHANGE_OWN_ROLE',
+    message: 'Không được phép thay đổi vai trò của chính mình',
+    statusCode: HttpStatus.FORBIDDEN,
+  },
+
+  CANNOT_CHANGE_OWN_STATUS: {
+    code: 'AUTH.CANNOT_CHANGE_OWN_STATUS',
+    message: 'Không được phép thay đổi trạng thái của chính mình',
+    statusCode: HttpStatus.FORBIDDEN,
+  },
 } as const;
