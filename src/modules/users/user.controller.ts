@@ -6,6 +6,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   Req,
   UseGuards,
 } from '@nestjs/common';
@@ -35,8 +36,8 @@ export class UserController {
 
   @UseGuards(JwtAuthGuard)
   @Get()
-  async findAll(@Req() req: any) {
-    return await this.findAllUsersUsecase.executive(req.user);
+  async findAll(@Req() req: any, @Query() query: any) {
+    return await this.findAllUsersUsecase.executive(req.user, query);
   }
 
   @UseGuards(JwtAuthGuard)

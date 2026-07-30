@@ -22,6 +22,17 @@ export class RegisterUseCase {
       email: data.email,
       passwordHash: passwordHasher,
     });
+
+
+    //action 1
+    //action 2
+    /*
+      1.event -- sự kiện
+      2. dispatcher -- đặt chỗ
+      3. listener -- lắng nghe
+      
+
+    */
     return UserMapper.toResponse(user);
   }
 }
