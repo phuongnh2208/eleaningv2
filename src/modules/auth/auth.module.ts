@@ -12,6 +12,11 @@ import { LogoutUsecase } from './use-cases/logout.usecase';
 import { HashingModule } from 'src/common/secret/hashing/hashing.module';
 import { JwtStrategy } from './strategies/jwt/jwt.stratergy';
 import { SessionStateFactory } from '../sessions/states/session-state.factory';
+import { EventModule } from 'src/common/events/events.module';
+import { AuditUserRegisteredObserver } from './observers/audit-user-registered.observer';
+import { WelcomeUserRegisteredObserver } from './observers/welcome-user-registered.observer';
+import { SecurityUserRegisteredObserver } from './observers/security-user-registered.observer';
+import { AuthEventRegistrar } from './auth-event-registrar';
 
 @Module({
   providers: [
@@ -23,11 +28,16 @@ import { SessionStateFactory } from '../sessions/states/session-state.factory';
     RefreshTokenUsecase,
     JwtStrategy,
     SessionStateFactory,
+    WelcomeUserRegisteredObserver,
+    AuditUserRegisteredObserver,
+    SecurityUserRegisteredObserver,
+    AuthEventRegistrar,
   ],
   controllers: [AuthController],
   imports: [
     UserModule,
     HashingModule,
+    EventModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],

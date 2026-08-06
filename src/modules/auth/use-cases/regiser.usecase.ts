@@ -5,12 +5,15 @@ import { UserMapper } from 'src/modules/users/mappers/user.mapper';
 import { AppException } from 'src/common/exceptions/app.exception';
 import { AuthError } from '../constants/auth.errors';
 import { PasswordHasherStrategy } from '../../../common/secret/hashing/password-hasher.strategy';
+import { EventDispatcher } from 'src/common/events/event-dispatcher';
+import { UserRegisteredEvent } from '../events/user-registered.event';
 
 @Injectable()
 export class RegisterUseCase {
   constructor(
     private readonly userRepository: UserRepository,
     private readonly passwordHasherStrategy: PasswordHasherStrategy,
+    private readonly eventDispatcher: EventDispatcher,
   ) {}
   async executive(data: RegisterDto) {
     const existingUser = await this.userRepository.findByEmail(data.email);
@@ -23,16 +26,7 @@ export class RegisterUseCase {
       passwordHash: passwordHasher,
     });
 
-
-    //action 1
-    //action 2
-    /*
-      1.event -- sự kiện
-      2. dispatcher -- đặt chỗ
-      3. listener -- lắng nghe
-      
-
-    */
+    await this.eventDispatcher.dispatch(new UserRegisteredEvent(user));
     return UserMapper.toResponse(user);
   }
 }
