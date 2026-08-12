@@ -1,6 +1,6 @@
 import { Role, Status } from 'src/generated/prisma/client';
 
-export type UpdateRepositoryInput = {
+export type UpdateUserRepositoryInput = {
   email?: string;
   passwordHash?: string;
   role?: Role;

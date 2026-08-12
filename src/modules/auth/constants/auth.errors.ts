@@ -85,7 +85,7 @@ export const AuthError = {
 
   CANNOT_CHANGE_OWN_STATUS: {
     code: 'AUTH.CANNOT_CHANGE_OWN_STATUS',
-    message: 'Không được phép thay đổi trạng thái của chính mình',
+    message: 'Không được phép thay đổi vai trò của người khác ',
     statusCode: HttpStatus.FORBIDDEN,
   },
 } as const;

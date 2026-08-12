@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { UserRepository } from 'src/modules/users/repositories/user.repository';
+import { UserRepositoryPort } from '../repositories/user-repository.port';
 import { UpdateUserDto } from '../dto/update-user.dto';
 import { UserMapper } from '../mappers/user.mapper';
 import { Role, Status } from 'src/generated/prisma/client';
@@ -11,7 +11,7 @@ import { PasswordHasherStrategy } from 'src/common/secret/hashing/password-hashe
 @Injectable()
 export class UpdateUserUseCase {
   constructor(
-    private readonly userRepository: UserRepository,
+    private readonly userRepository: UserRepositoryPort,
     private readonly passwordHasherStrategy: PasswordHasherStrategy,
   ) {}
   async executive(
@@ -50,15 +50,15 @@ export class UpdateUserUseCase {
       status: Status;
     }> = {};
 
-    if (data.email! == undefined) updateData.email = data.email;
+    if (data.email !== undefined) updateData.email = data.email;
     if (data.password !== undefined) {
       const hashedPassword = await this.passwordHasherStrategy.hash(
         data.password,
       );
       updateData.passwordHash = hashedPassword;
     }
-    if (data.role! == undefined) updateData.role = data.role;
-    if (data.status! == undefined) updateData.status = data.status;
+    if (data.role !== undefined) updateData.role = data.role;
+    if (data.status !== undefined) updateData.status = data.status;
     const user = await this.userRepository.updateUser(targetUserID, updateData);
     if (!user) throw new AppException(UserError.USER_NOT_FOUND);
     return UserMapper.toResponse(user);

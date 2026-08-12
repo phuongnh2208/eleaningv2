@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { UserRepository } from 'src/modules/users/repositories/user.repository';
+import { UserRepositoryPort } from '../repositories/user-repository.port';
 import { UserMapper } from '../mappers/user.mapper';
 import { Role, Status } from 'src/generated/prisma/client';
 import { AppException } from 'src/common/exceptions/app.exception';
@@ -7,7 +7,7 @@ import { AuthError } from 'src/modules/auth/constants/auth.errors';
 
 @Injectable()
 export class FindUserByIdUseCase {
-  constructor(private readonly useRepository: UserRepository) {}
+  constructor(private readonly useRepository: UserRepositoryPort) {}
   async excutive(
     currenUser: {
       id: number;

@@ -5,13 +5,13 @@ import { ExtractJwt, Strategy } from 'passport-jwt';
 import { AppException } from 'src/common/exceptions/app.exception';
 import { Role } from 'src/generated/prisma/client';
 import { AuthError } from '../../constants/auth.errors';
-import { UserRepository } from 'src/modules/users/repositories/user.repository';
+import { UserRepositoryPort } from 'src/modules/users/repositories/user-repository.port';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
   constructor(
     private readonly config: ConfigService,
-    private readonly userRepository: UserRepository,
+    private readonly userRepository: UserRepositoryPort,
   ) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),

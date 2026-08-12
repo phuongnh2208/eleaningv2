@@ -1,19 +1,15 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-import { Injectable, Search } from '@nestjs/common';
-import { UserRepository } from 'src/modules/users/repositories/user.repository';
+import { Injectable } from '@nestjs/common';
+import { UserRepositoryPort } from '../repositories/user-repository.port';
 import { UserMapper } from '../mappers/user.mapper';
-import { Role, Status } from 'src/generated/prisma/enums';
+import { Role, Status } from 'src/generated/prisma/client';
 import { AppException } from 'src/common/exceptions/app.exception';
 import { AuthError } from 'src/modules/auth/constants/auth.errors';
 import { QueryUserDt0 } from '../dto/query-users.dto';
-import { contains } from 'class-validator';
-import { filter } from 'rxjs';
-import { SortOrder } from 'src/generated/prisma/internal/prismaNamespace';
 import { UserQueryBuilder } from '../builders/user-query.builders';
 
 @Injectable()
 export class FindAllUsersUseCase {
-  constructor(private readonly userRepository: UserRepository) {}
+  constructor(private readonly userRepository: UserRepositoryPort) {}
   async executive(
     currentUser: {
       id: number;
@@ -33,7 +29,7 @@ export class FindAllUsersUseCase {
     const where = queryBuilder.builderWhere();
 
     // build orderBy
-    const orderBy = queryBuilder.builderWhere();
+    const orderBy = queryBuilder.builderOrderBy();
 
     // build pagination
     const pagination = queryBuilder.builderPagination();
@@ -60,7 +56,7 @@ export class FindAllUsersUseCase {
       },
       sort: {
         sortBy: query.sortBy,
-        SortOrder: query.sortOrder,
+        sortOrder: query.sortOrder,
       },
     };
   }

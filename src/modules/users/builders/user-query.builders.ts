@@ -1,16 +1,16 @@
-import { contains } from 'class-validator';
+import { Prisma } from 'src/generated/prisma/client';
 import { QueryUserDt0 } from '../dto/query-users.dto';
 
 export class UserQueryBuilder {
   constructor(private query: QueryUserDt0) {}
-  builderWhere() {
-    const where: any = {};
+  builderWhere(): Prisma.UserWhereInput {
+    const where: Prisma.UserWhereInput = {};
     if (this.query.role) where.role = this.query.role;
     if (this.query.status) where.status = this.query.status;
     if (this.query.search) where.email = { contains: this.query.search };
     return where;
   }
-  builderOrderBy(): any {
+  builderOrderBy(): Prisma.UserOrderByWithRelationInput {
     const allowedSortFields = [
       'id',
       'email',

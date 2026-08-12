@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { UserRepository } from 'src/modules/users/repositories/user.repository';
+import { UserRepositoryPort } from 'src/modules/users/repositories/user-repository.port';
 import { RegisterDto } from '../dto/register.dto';
 import { UserMapper } from 'src/modules/users/mappers/user.mapper';
 import { AppException } from 'src/common/exceptions/app.exception';
@@ -11,7 +11,7 @@ import { UserRegisteredEvent } from '../events/user-registered.event';
 @Injectable()
 export class RegisterUseCase {
   constructor(
-    private readonly userRepository: UserRepository,
+    private readonly userRepository: UserRepositoryPort,
     private readonly passwordHasherStrategy: PasswordHasherStrategy,
     private readonly eventDispatcher: EventDispatcher,
   ) {}

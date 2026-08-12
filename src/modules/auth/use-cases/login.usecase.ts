@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { UserRepository } from 'src/modules/users/repositories/user.repository';
+import { UserRepositoryPort } from 'src/modules/users/repositories/user-repository.port';
 import { LoginDto } from '../dto/login.dto';
 import { AuthError } from '../constants/auth.errors';
 import { AppException } from 'src/common/exceptions/app.exception';
@@ -11,7 +11,7 @@ import { SessionStatus } from 'src/generated/prisma/client';
 @Injectable()
 export class LoginUseCase {
   constructor(
-    private readonly useRepository: UserRepository,
+    private readonly useRepository: UserRepositoryPort,
     private readonly sessionRepository: SessionRepository,
     private readonly passwordHasherStrategy: PasswordHasherStrategy,
     private readonly authTokenFactory: AuthTokenFactory,

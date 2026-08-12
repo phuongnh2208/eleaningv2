@@ -8,6 +8,8 @@ import { UpdateUserUseCase } from './use-cases/update-user.usecase';
 import { DeleteUserUseCase } from './use-cases/delete-user.usecase';
 import { JwtStrategy } from '../auth/strategies/jwt/jwt.stratergy';
 import { HashingModule } from 'src/common/secret/hashing/hashing.module';
+import { LoggingUserRepositoryDecorator } from './repositories/logging-user-repository.decorator';
+import { UserRepositoryPort } from './repositories/user-repository.port';
 
 @Module({
   providers: [
@@ -18,9 +20,15 @@ import { HashingModule } from 'src/common/secret/hashing/hashing.module';
     UpdateUserUseCase,
     DeleteUserUseCase,
     UserRepository,
+    {
+      provide: UserRepositoryPort,
+      useFactory: (repository: UserRepository) =>
+        new LoggingUserRepositoryDecorator(repository),
+      inject: [UserRepository],
+    },
   ],
   controllers: [UserController],
   imports: [HashingModule],
-  exports: [UserRepository],
+  exports: [UserRepository, UserRepositoryPort],
 })
 export class UserModule {}

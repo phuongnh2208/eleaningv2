@@ -4,7 +4,7 @@ import { RefreshTokenDto } from '../dto/refresh-token.dto';
 import { JwtService } from '@nestjs/jwt';
 import { AppException } from 'src/common/exceptions/app.exception';
 import { AuthError } from '../constants/auth.errors';
-import { UserRepository } from 'src/modules/users/repositories/user.repository';
+import { UserRepositoryPort } from 'src/modules/users/repositories/user-repository.port';
 import { SessionRepository } from 'src/modules/sessions/repositories/session.repository';
 import { PasswordHasherStrategy } from '../../../common/secret/hashing/password-hasher.strategy';
 import { SessionStatus } from 'src/generated/prisma/client';
@@ -14,7 +14,7 @@ import { SessionStateFactory } from 'src/modules/sessions/states/session-state.f
 export class LogoutUsecase {
   constructor(
     private readonly jwtService: JwtService,
-    private readonly userRepository: UserRepository,
+    private readonly userRepository: UserRepositoryPort,
     private readonly sessionRepository: SessionRepository,
     private readonly passwordHasherStrategy: PasswordHasherStrategy,
     private readonly sessionStateFactory: SessionStateFactory
@@ -27,7 +27,7 @@ export class LogoutUsecase {
       throw new AppException(AuthError.REFRESH_TOKEN_INVALID);
     }
 
-    if (payload.type! == 'refresh')
+    if (payload.type !== 'refresh')
       throw new AppException(AuthError.INVALID_TOKEN_TYPE);
 
     const user = await this.userRepository.findOne(payload.sub);

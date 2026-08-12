@@ -2,7 +2,7 @@
 import { Injectable } from '@nestjs/common';
 import { RefreshTokenDto } from '../dto/refresh-token.dto';
 import { JwtService } from '@nestjs/jwt';
-import { UserRepository } from 'src/modules/users/repositories/user.repository';
+import { UserRepositoryPort } from 'src/modules/users/repositories/user-repository.port';
 import { SessionRepository } from 'src/modules/sessions/repositories/session.repository';
 import { PasswordHasherStrategy } from '../../../common/secret/hashing/password-hasher.strategy';
 import { AppException } from 'src/common/exceptions/app.exception';
@@ -15,7 +15,7 @@ import { SessionStateFactory } from 'src/modules/sessions/states/session-state.f
 export class RefreshTokenUsecase {
   constructor(
     private readonly jwtService: JwtService,
-    private readonly userRepository: UserRepository,
+    private readonly userRepository: UserRepositoryPort,
     private readonly sessionRepository: SessionRepository,
     private readonly passwordHasherStrategy: PasswordHasherStrategy,
     private readonly authTokenFactory: AuthTokenFactory,
