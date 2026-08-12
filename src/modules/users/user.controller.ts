@@ -18,6 +18,18 @@ import { FindUserByIdUseCase } from './use-cases/find-user-by-id.usecase';
 import { UpdateUserUseCase } from './use-cases/update-user.usecase';
 import { DeleteUserUseCase } from './use-cases/delete-user.usecase';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { Role, Status } from 'src/generated/prisma/client';
+
+interface JwtUser {
+  id: number;
+  email: string;
+  role: Role;
+  status: Status;
+}
+
+interface AuthenticatedRequest {
+  user: JwtUser;
+}
 
 @Controller('users')
 export class UserController {
@@ -36,20 +48,20 @@ export class UserController {
 
   @UseGuards(JwtAuthGuard)
   @Get()
-  async findAll(@Req() req: any, @Query() query: any) {
+  async findAll(@Req() req: AuthenticatedRequest, @Query() query: any) {
     return await this.findAllUsersUsecase.executive(req.user, query);
   }
 
   @UseGuards(JwtAuthGuard)
   @Get(':id')
-  async findOne(@Req() req: any, @Param('id') id: string) {
+  async findOne(@Req() req: AuthenticatedRequest, @Param('id') id: string) {
     return await this.findUserByIdUseCase.excutive(req.user, Number(id));
   }
 
   @UseGuards(JwtAuthGuard)
   @Patch(':id')
   async updateUser(
-    @Req() req: any,
+    @Req() req: AuthenticatedRequest,
     @Param('id') id: string,
     @Body() body: UpdateUserDto,
   ) {

@@ -27,6 +27,12 @@ export abstract class UserRepositoryPort {
   //     });
   //   }
   abstract findByEmail(email: string): Promise<User | null>;
+  //   findByGoogleId(googleId: string) {
+  //     return await this.prisma.user.findUnique({
+  //       where: { googleId },
+  //     });
+  //   }
+  abstract findByGoogleId(googleId: string): Promise<User | null>;
   //   updateUser(id: number, data: UpdateUserRepositoryInput) {
   //     return await this.prisma.user.update({
   //       where: { id },

@@ -45,6 +45,13 @@ export class LoggingUserRepositoryDecorator extends UserRepositoryPort {
     return this.userRepository.findByEmail(email);
   }
 
+  async findByGoogleId(googleId: string): Promise<User | null> {
+    this.logger.log(
+      `[${new Date().toISOString()}] findByGoogleId user called with googleId = ${googleId}`,
+    );
+    return this.userRepository.findByGoogleId(googleId);
+  }
+
   async updateUser(id: number, data: UpdateUserRepositoryInput): Promise<User> {
     this.logger.log(
       `[${new Date().toISOString()}] update user called with id = ${id}`,

@@ -6,7 +6,7 @@ import { AppException } from 'src/common/exceptions/app.exception';
 import { PasswordHasherStrategy } from '../../../common/secret/hashing/password-hasher.strategy';
 import { AuthTokenFactory } from '../factories/auth-token.factory';
 import { SessionRepository } from 'src/modules/sessions/repositories/session.repository';
-import { SessionStatus } from 'src/generated/prisma/client';
+import { SessionStatus, Status } from 'src/generated/prisma/client';
 
 @Injectable()
 export class LoginUseCase {
@@ -19,6 +19,11 @@ export class LoginUseCase {
   async excutive(data: LoginDto) {
     const user = await this.useRepository.findByEmail(data.email);
     if (!user) throw new AppException(AuthError.INVALID_CREDENTIALS);
+
+    if (user.status === Status.BANNED) {
+      throw new AppException(AuthError.USER_BANNED);
+    }
+
     // const isPasswordCorrect = user.passwordHash === data.password;
     const isPasswordCorrect = await this.passwordHasherStrategy.compare(
       data.password,

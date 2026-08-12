@@ -88,4 +88,10 @@ export const AuthError = {
     message: 'Không được phép thay đổi vai trò của người khác ',
     statusCode: HttpStatus.FORBIDDEN,
   },
+
+  USER_BANNED: {
+    code: 'AUTH.USER_BANNED',
+    message: 'Tài khoản đã bị khóa',
+    statusCode: HttpStatus.FORBIDDEN,
+  },
 } as const;

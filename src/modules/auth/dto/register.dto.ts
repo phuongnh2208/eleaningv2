@@ -1,4 +1,3 @@
-/* eslint-disable */
 import { IsEmail, IsNotEmpty, MinLength } from 'class-validator';
 import { ValidationMessage } from 'src/common/constants/validation.messages';
 

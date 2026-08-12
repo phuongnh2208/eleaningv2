@@ -3,7 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { AppException } from 'src/common/exceptions/app.exception';
-import { Role } from 'src/generated/prisma/client';
+import { Role, Status } from 'src/generated/prisma/client';
 import { AuthError } from '../../constants/auth.errors';
 import { UserRepositoryPort } from 'src/modules/users/repositories/user-repository.port';
 
@@ -29,6 +29,9 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
       throw new AppException(AuthError.INVALID_TOKEN_TYPE);
     const user = await this.userRepository.findOne(payload.sub);
     if (!user) throw new AppException(AuthError.USER_NOT_FOUND);
+    if (user.status === Status.BANNED) {
+      throw new AppException(AuthError.USER_BANNED);
+    }
     return {
       id: user.id,
       email: user.email,

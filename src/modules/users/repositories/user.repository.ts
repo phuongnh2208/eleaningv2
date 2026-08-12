@@ -36,6 +36,11 @@ export class UserRepository extends UserRepositoryPort {
       where: { email },
     });
   }
+  async findByGoogleId(googleId: string) {
+    return await this.prisma.user.findUnique({
+      where: { googleId },
+    });
+  }
   async updateUser(id: number, data: UpdateUserRepositoryInput) {
     return await this.prisma.user.update({
       where: { id },

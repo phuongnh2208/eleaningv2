@@ -17,6 +17,8 @@ import { AuditUserRegisteredObserver } from './observers/audit-user-registered.o
 import { WelcomeUserRegisteredObserver } from './observers/welcome-user-registered.observer';
 import { SecurityUserRegisteredObserver } from './observers/security-user-registered.observer';
 import { AuthEventRegistrar } from './auth-event-registrar';
+import { GoogleStrategy } from './strategies/google/google.strategy';
+import { GoogleLoginUseCase } from './use-cases/google-login.usecase';
 
 @Module({
   providers: [
@@ -32,6 +34,8 @@ import { AuthEventRegistrar } from './auth-event-registrar';
     AuditUserRegisteredObserver,
     SecurityUserRegisteredObserver,
     AuthEventRegistrar,
+    GoogleStrategy,
+    GoogleLoginUseCase,
   ],
   controllers: [AuthController],
   imports: [
