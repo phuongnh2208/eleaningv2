@@ -6,19 +6,21 @@ import { FindAllUsersUseCase } from './use-cases/find-all-users.usecase';
 import { FindUserByIdUseCase } from './use-cases/find-user-by-id.usecase';
 import { UpdateUserUseCase } from './use-cases/update-user.usecase';
 import { DeleteUserUseCase } from './use-cases/delete-user.usecase';
-import { JwtStrategy } from '../auth/strategies/jwt/jwt.stratergy';
 import { HashingModule } from 'src/common/secret/hashing/hashing.module';
 import { LoggingUserRepositoryDecorator } from './repositories/logging-user-repository.decorator';
 import { UserRepositoryPort } from './repositories/user-repository.port';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { RolesGuard } from '../auth/guards/roles.guard';
 
 @Module({
   providers: [
     CreateUserUseCase,
     FindAllUsersUseCase,
     FindUserByIdUseCase,
-    JwtStrategy,
     UpdateUserUseCase,
     DeleteUserUseCase,
+    JwtAuthGuard,
+    RolesGuard,
     UserRepository,
     {
       provide: UserRepositoryPort,

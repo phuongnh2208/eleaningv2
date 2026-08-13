@@ -1,23 +1,20 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
-import { Strategy, VerifyCallback, Profile } from 'passport-google-oauth20';
-
-interface GoogleProfile extends Profile {
-  id: string;
-  emails: Array<{ value: string; verified: boolean }>;
-  displayName: string;
-  photos: Array<{ value: string }>;
-}
+import { Profile, Strategy } from 'passport-google-oauth20';
 
 @Injectable()
 export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
   constructor(private readonly config: ConfigService) {
     super({
-      clientID: config.get<string>('GOOGLE_CLIENT_ID') || '',
-      clientSecret: config.get<string>('GOOGLE_CLIENT_SECRET') || '',
+      clientID:
+        config.get<string>('GOOGLE_CLIENT_ID') ??
+        'google-client-not-configured',
+      clientSecret:
+        config.get<string>('GOOGLE_CLIENT_SECRET') ??
+        'google-client-secret-not-configured',
       callbackURL:
-        config.get<string>('GOOGLE_CALLBACK_URL') ||
+        config.get<string>('GOOGLE_CALLBACK_URL') ??
         'http://localhost:3000/auth/google/callback',
       scope: ['email', 'profile'],
     });
@@ -26,18 +23,20 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
   validate(
     accessToken: string,
     refreshToken: string,
-    profile: GoogleProfile,
-    done: VerifyCallback,
-  ): void {
-    const { id, emails, displayName, photos } = profile;
-    const user = {
-      googleId: id,
-      email: emails[0].value,
-      name: displayName,
-      picture: photos[0]?.value,
-      accessToken,
-      refreshToken,
+    profile: Profile,
+  ): {
+    googleId: string;
+    email: string;
+  } {
+    const email = profile.emails?.[0]?.value?.toLowerCase();
+
+    if (!email) {
+      throw new Error('Google profile does not contain a verified email');
+    }
+
+    return {
+      googleId: profile.id,
+      email,
     };
-    done(null, user);
   }
 }

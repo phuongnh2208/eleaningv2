@@ -18,32 +18,28 @@ export class LoginUseCase {
   ) {}
   async excutive(data: LoginDto) {
     const user = await this.useRepository.findByEmail(data.email);
-    if (!user) throw new AppException(AuthError.INVALID_CREDENTIALS);
-
-    if (user.status === Status.BANNED) {
+    if (!user || !user.passwordHash)
+      throw new AppException(AuthError.INVALID_CREDENTIALS);
+    if (user.status !== Status.ACTIVE)
       throw new AppException(AuthError.USER_BANNED);
-    }
-
     // const isPasswordCorrect = user.passwordHash === data.password;
     const isPasswordCorrect = await this.passwordHasherStrategy.compare(
       data.password,
       user.passwordHash,
     );
-
     if (!isPasswordCorrect)
       throw new AppException(AuthError.INVALID_CREDENTIALS);
     // Revoke all session by userID
     await this.sessionRepository.revokeAllActiveByUserId(user.id);
     const loginResponse = await this.authTokenFactory.createLoginResponse(user);
-    const hasedRefreshToken = await this.passwordHasherStrategy.hash(
+    const refreshTokenHash = await this.passwordHasherStrategy.hash(
       loginResponse.refreshToken,
     );
-
     await this.sessionRepository.create({
       userID: user.id,
-      refreshTokenHash: hasedRefreshToken,
+      refreshTokenHash,
       status: SessionStatus.ACTIVE,
     });
-    return await this.authTokenFactory.createLoginResponse(user);
+    return loginResponse;
   }
 }

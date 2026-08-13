@@ -1,72 +1,67 @@
 import { Injectable } from '@nestjs/common';
-import { UserRepositoryPort } from 'src/modules/users/repositories/user-repository.port';
+import { Status, SessionStatus } from 'src/generated/prisma/client';
 import { AppException } from 'src/common/exceptions/app.exception';
+import { PasswordHasherStrategy } from 'src/common/secret/hashing/password-hasher.strategy';
+import { UserRepositoryPort } from 'src/modules/users/repositories/user-repository.port';
+import { SessionRepository } from 'src/modules/sessions/repositories/session.repository';
 import { AuthError } from '../constants/auth.errors';
 import { AuthTokenFactory } from '../factories/auth-token.factory';
-import { SessionRepository } from 'src/modules/sessions/repositories/session.repository';
-import { SessionStatus, Status } from 'src/generated/prisma/client';
-import { PasswordHasherStrategy } from 'src/common/secret/hashing/password-hasher.strategy';
 
-interface GoogleUser {
+export type GoogleProfile = {
   googleId: string;
   email: string;
-  name: string;
-  picture?: string;
-}
+};
 
 @Injectable()
 export class GoogleLoginUseCase {
   constructor(
     private readonly userRepository: UserRepositoryPort,
     private readonly sessionRepository: SessionRepository,
-    private readonly authTokenFactory: AuthTokenFactory,
     private readonly passwordHasherStrategy: PasswordHasherStrategy,
+    private readonly authTokenFactory: AuthTokenFactory,
   ) {}
 
-  async execute(googleUser: GoogleUser) {
-    // Check if user exists by googleId
-    let user = await this.userRepository.findByGoogleId(googleUser.googleId);
+  async execute(profile: GoogleProfile) {
+    let user = await this.userRepository.findByEmail(profile.email);
 
-    if (user) {
-      // User exists with this googleId, check status
-      if (user.status === Status.BANNED) {
-        throw new AppException(AuthError.USER_BANNED);
-      }
-    } else {
-      // Check if user exists by email
-      user = await this.userRepository.findByEmail(googleUser.email);
-
-      if (user) {
-        // User exists with email but no googleId, link the account
-        if (user.status === Status.BANNED) {
-          throw new AppException(AuthError.USER_BANNED);
-        }
-        user = await this.userRepository.updateUser(user.id, {
-          googleId: googleUser.googleId,
-        });
-      } else {
-        // Create new user with googleId
-        user = await this.userRepository.createUser({
-          email: googleUser.email,
-          googleId: googleUser.googleId,
-          passwordHash: null,
-        });
-      }
+    if (user?.googleId && user.googleId !== profile.googleId) {
+      throw new AppException(AuthError.GOOGLE_ACCOUNT_MISMATCH);
     }
 
-    // Revoke all existing sessions
+    if (user && user.status !== Status.ACTIVE) {
+      throw new AppException(AuthError.USER_BANNED);
+    }
+
+    if (!user) {
+      user = await this.userRepository.createUser({
+        email: profile.email,
+        passwordHash: null,
+        googleId: profile.googleId,
+      });
+    } else if (!user.googleId) {
+      user = await this.userRepository.updateUser(user.id, {
+        googleId: profile.googleId,
+      });
+    }
+
     await this.sessionRepository.revokeAllActiveByUserId(user.id);
 
-    // Create new tokens
-    const loginResponse = await this.authTokenFactory.createLoginResponse(user);
-    const hashedRefreshToken = await this.passwordHasherStrategy.hash(
+    const loginResponse = await this.authTokenFactory.createLoginResponse({
+      id: user.id,
+      email: user.email,
+      role: user.role,
+      status: user.status,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
+    });
+
+    const refreshTokenHash = await this.passwordHasherStrategy.hash(
       loginResponse.refreshToken,
     );
 
-    // Create new session
     await this.sessionRepository.create({
       userID: user.id,
-      refreshTokenHash: hashedRefreshToken,
+      refreshTokenHash,
       status: SessionStatus.ACTIVE,
     });
 

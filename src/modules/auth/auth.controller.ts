@@ -1,12 +1,5 @@
-import {
-  Body,
-  Controller,
-  Get,
-  Post,
-  Req,
-  Res,
-  UseGuards,
-} from '@nestjs/common';
+import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
+import { GoogleAuthGuard } from './guards/google-auth.guard';
 import { RegisterUseCase } from './use-cases/regiser.usecase';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
@@ -14,16 +7,7 @@ import { LoginUseCase } from './use-cases/login.usecase';
 import { LogoutUsecase } from './use-cases/logout.usecase';
 import { RefreshTokenUsecase } from './use-cases/refresh-token.usecase';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
-import { GoogleAuthGuard } from './guards/google-auth.guard';
 import { GoogleLoginUseCase } from './use-cases/google-login.usecase';
-import type { Response } from 'express';
-
-interface GoogleUser {
-  googleId: string;
-  email: string;
-  name: string;
-  picture?: string;
-}
 
 @Controller('auth')
 export class AuthController {
@@ -55,25 +39,17 @@ export class AuthController {
     return await this.refreshTokenUseCase.executive(body);
   }
 
-  @Get('google')
   @UseGuards(GoogleAuthGuard)
-  async googleAuth() {
-    // Initiates Google OAuth2 flow
+  @Get('google')
+  googleLogin() {
+    return { message: 'Redirecting to Google' };
   }
 
-  @Get('google/callback')
   @UseGuards(GoogleAuthGuard)
-  async googleAuthCallback(
-    @Req() req: { user: GoogleUser },
-    @Res() res: Response,
+  @Get('google/callback')
+  async googleCallback(
+    @Req() request: { user: { googleId: string; email: string } },
   ) {
-    const googleUser = req.user;
-    const result = await this.googleLoginUseCase.execute(googleUser);
-
-    // Redirect to frontend with tokens
-    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3001';
-    res.redirect(
-      `${frontendUrl}/auth/callback?accessToken=${result.accessToken}&refreshToken=${result.refreshToken}`,
-    );
+    return await this.googleLoginUseCase.execute(request.user);
   }
 }

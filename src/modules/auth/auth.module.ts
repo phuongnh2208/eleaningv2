@@ -19,6 +19,8 @@ import { SecurityUserRegisteredObserver } from './observers/security-user-regist
 import { AuthEventRegistrar } from './auth-event-registrar';
 import { GoogleStrategy } from './strategies/google/google.strategy';
 import { GoogleLoginUseCase } from './use-cases/google-login.usecase';
+import { GoogleAuthGuard } from './guards/google-auth.guard';
+import { PassportModule } from '@nestjs/passport';
 
 @Module({
   providers: [
@@ -34,12 +36,14 @@ import { GoogleLoginUseCase } from './use-cases/google-login.usecase';
     AuditUserRegisteredObserver,
     SecurityUserRegisteredObserver,
     AuthEventRegistrar,
-    GoogleStrategy,
     GoogleLoginUseCase,
+    GoogleStrategy,
+    GoogleAuthGuard,
   ],
   controllers: [AuthController],
   imports: [
     UserModule,
+    PassportModule.register({ defaultStrategy: 'jwt' }),
     HashingModule,
     EventModule,
     JwtModule.registerAsync({

@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { GoogleLoginUseCase } from './google-login.usecase';
-import { UserRepositoryPort } from '../repositories/user-repository.port';
-import { SessionRepository } from '../sessions/repositories/session.repository';
+import { UserRepositoryPort } from 'src/modules/users/repositories/user-repository.port';
+import { SessionRepository } from 'src/modules/sessions/repositories/session.repository';
 import { AuthTokenFactory } from '../factories/auth-token.factory';
 import { PasswordHasherStrategy } from 'src/common/secret/hashing/password-hasher.strategy';
 import { AppException } from 'src/common/exceptions/app.exception';
@@ -18,8 +18,6 @@ describe('GoogleLoginUseCase', () => {
   const mockGoogleUser = {
     googleId: 'google-123',
     email: 'test@gmail.com',
-    name: 'Test User',
-    picture: 'https://example.com/photo.jpg',
   };
 
   const mockUser = {
@@ -48,8 +46,8 @@ describe('GoogleLoginUseCase', () => {
 
   beforeEach(async () => {
     mockUserRepository = {
-      findByGoogleId: jest.fn(),
       findByEmail: jest.fn(),
+      findByGoogleId: jest.fn(),
       createUser: jest.fn(),
       updateUser: jest.fn(),
     };
@@ -88,10 +86,8 @@ describe('GoogleLoginUseCase', () => {
   });
 
   describe('execute', () => {
-    it('should login existing user with googleId', async () => {
-      (mockUserRepository.findByGoogleId as jest.Mock).mockResolvedValue(
-        mockUser,
-      );
+    it('should login existing user with matching googleId', async () => {
+      (mockUserRepository.findByEmail as jest.Mock).mockResolvedValue(mockUser);
       (mockAuthTokenFactory.createLoginResponse as jest.Mock).mockResolvedValue(
         mockLoginResponse,
       );
@@ -101,14 +97,19 @@ describe('GoogleLoginUseCase', () => {
 
       const result = await useCase.execute(mockGoogleUser);
 
-      expect(mockUserRepository.findByGoogleId).toHaveBeenCalledWith(
-        'google-123',
+      expect(mockUserRepository.findByEmail).toHaveBeenCalledWith(
+        'test@gmail.com',
       );
       expect(
         mockSessionRepository.revokeAllActiveByUserId,
       ).toHaveBeenCalledWith(1);
       expect(mockAuthTokenFactory.createLoginResponse).toHaveBeenCalledWith(
-        mockUser,
+        expect.objectContaining({
+          id: 1,
+          email: 'test@gmail.com',
+          role: Role.USER,
+          status: Status.ACTIVE,
+        }),
       );
       expect(mockPasswordHasherStrategy.hash).toHaveBeenCalledWith(
         'refresh-token',
@@ -121,9 +122,23 @@ describe('GoogleLoginUseCase', () => {
       expect(result).toEqual(mockLoginResponse);
     });
 
-    it('should throw USER_BANNED when existing user with googleId is banned', async () => {
+    it('should throw GOOGLE_ACCOUNT_MISMATCH when googleId differs', async () => {
+      const mismatchedUser = { ...mockUser, googleId: 'different-google-id' };
+      (mockUserRepository.findByEmail as jest.Mock).mockResolvedValue(
+        mismatchedUser,
+      );
+
+      await expect(useCase.execute(mockGoogleUser)).rejects.toThrow(
+        AppException,
+      );
+      await expect(useCase.execute(mockGoogleUser)).rejects.toMatchObject({
+        message: AuthError.GOOGLE_ACCOUNT_MISMATCH.message,
+      });
+    });
+
+    it('should throw USER_BANNED when existing user is banned', async () => {
       const bannedUser = { ...mockUser, status: Status.BANNED };
-      (mockUserRepository.findByGoogleId as jest.Mock).mockResolvedValue(
+      (mockUserRepository.findByEmail as jest.Mock).mockResolvedValue(
         bannedUser,
       );
 
@@ -131,7 +146,7 @@ describe('GoogleLoginUseCase', () => {
         AppException,
       );
       await expect(useCase.execute(mockGoogleUser)).rejects.toMatchObject({
-        error: AuthError.USER_BANNED,
+        message: AuthError.USER_BANNED.message,
       });
     });
 
@@ -139,7 +154,6 @@ describe('GoogleLoginUseCase', () => {
       const userWithoutGoogleId = { ...mockUser, googleId: null };
       const updatedUser = { ...mockUser, googleId: 'google-123' };
 
-      (mockUserRepository.findByGoogleId as jest.Mock).mockResolvedValue(null);
       (mockUserRepository.findByEmail as jest.Mock).mockResolvedValue(
         userWithoutGoogleId,
       );
@@ -155,9 +169,6 @@ describe('GoogleLoginUseCase', () => {
 
       const result = await useCase.execute(mockGoogleUser);
 
-      expect(mockUserRepository.findByGoogleId).toHaveBeenCalledWith(
-        'google-123',
-      );
       expect(mockUserRepository.findByEmail).toHaveBeenCalledWith(
         'test@gmail.com',
       );
@@ -167,24 +178,8 @@ describe('GoogleLoginUseCase', () => {
       expect(result).toEqual(mockLoginResponse);
     });
 
-    it('should throw USER_BANNED when existing user by email is banned', async () => {
-      const bannedUser = { ...mockUser, googleId: null, status: Status.BANNED };
-      (mockUserRepository.findByGoogleId as jest.Mock).mockResolvedValue(null);
-      (mockUserRepository.findByEmail as jest.Mock).mockResolvedValue(
-        bannedUser,
-      );
-
-      await expect(useCase.execute(mockGoogleUser)).rejects.toThrow(
-        AppException,
-      );
-      await expect(useCase.execute(mockGoogleUser)).rejects.toMatchObject({
-        error: AuthError.USER_BANNED,
-      });
-    });
-
     it('should create new user when no existing user found', async () => {
       const newUser = { ...mockUser, id: 2 };
-      (mockUserRepository.findByGoogleId as jest.Mock).mockResolvedValue(null);
       (mockUserRepository.findByEmail as jest.Mock).mockResolvedValue(null);
       (mockUserRepository.createUser as jest.Mock).mockResolvedValue(newUser);
       (mockAuthTokenFactory.createLoginResponse as jest.Mock).mockResolvedValue(
@@ -196,9 +191,6 @@ describe('GoogleLoginUseCase', () => {
 
       const result = await useCase.execute(mockGoogleUser);
 
-      expect(mockUserRepository.findByGoogleId).toHaveBeenCalledWith(
-        'google-123',
-      );
       expect(mockUserRepository.findByEmail).toHaveBeenCalledWith(
         'test@gmail.com',
       );
@@ -207,6 +199,9 @@ describe('GoogleLoginUseCase', () => {
         googleId: 'google-123',
         passwordHash: null,
       });
+      expect(
+        mockSessionRepository.revokeAllActiveByUserId,
+      ).toHaveBeenCalledWith(2);
       expect(result).toEqual(mockLoginResponse);
     });
   });
