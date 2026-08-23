@@ -1,8 +1,9 @@
 import { Module } from '@nestjs/common';
-import { RegisterUseCase } from './use-cases/regiser.usecase';
 import { AuthController } from './auth.controller';
 import { UserModule } from '../users/user.module';
+import { RegisterUseCase } from './use-cases/regiser.usecase';
 import { LoginUseCase } from './use-cases/login.usecase';
+import { LinkGoogleAccountUseCase } from './use-cases/link-google-account.usecase';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AuthTokenFactory } from './factories/auth-token.factory';
@@ -21,11 +22,13 @@ import { GoogleStrategy } from './strategies/google/google.strategy';
 import { GoogleLoginUseCase } from './use-cases/google-login.usecase';
 import { GoogleAuthGuard } from './guards/google-auth.guard';
 import { PassportModule } from '@nestjs/passport';
+import { GoogleIdTokenVerifierService } from './services/google-id-token-verifier.service';
 
 @Module({
   providers: [
     RegisterUseCase,
     LoginUseCase,
+    LinkGoogleAccountUseCase,
     AuthTokenFactory,
     SessionRepository,
     LogoutUsecase,
@@ -39,6 +42,7 @@ import { PassportModule } from '@nestjs/passport';
     GoogleLoginUseCase,
     GoogleStrategy,
     GoogleAuthGuard,
+    GoogleIdTokenVerifierService,
   ],
   controllers: [AuthController],
   imports: [

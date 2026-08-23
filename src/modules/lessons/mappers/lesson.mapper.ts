@@ -17,7 +17,7 @@ export class LessonMapper {
     if (includeVideo && lesson.video) {
       response.video = {
         provider: lesson.video.provider,
-        externalId: lesson.video.externalId,
+        driveFileId: lesson.video.driveFileId,
         embedUrl: lesson.video.embedUrl,
       };
     }

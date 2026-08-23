@@ -6,10 +6,14 @@ import { UserRepositoryPort } from 'src/modules/users/repositories/user-reposito
 import { SessionRepository } from 'src/modules/sessions/repositories/session.repository';
 import { AuthError } from '../constants/auth.errors';
 import { AuthTokenFactory } from '../factories/auth-token.factory';
+import { EventDispatcher } from 'src/common/events/event-dispatcher';
+import { UserRegisteredEvent } from '../events/user-registered.event';
 
 export type GoogleProfile = {
   googleId: string;
   email: string;
+  name?: string | null;
+  picture?: string | null;
 };
 
 @Injectable()
@@ -19,6 +23,7 @@ export class GoogleLoginUseCase {
     private readonly sessionRepository: SessionRepository,
     private readonly passwordHasherStrategy: PasswordHasherStrategy,
     private readonly authTokenFactory: AuthTokenFactory,
+    private readonly eventDispatcher: EventDispatcher,
   ) {}
 
   async execute(profile: GoogleProfile) {
@@ -37,10 +42,15 @@ export class GoogleLoginUseCase {
         email: profile.email,
         passwordHash: null,
         googleId: profile.googleId,
+        name: profile.name ?? null,
+        picture: profile.picture ?? null,
       });
+      await this.eventDispatcher.dispatch(new UserRegisteredEvent(user));
     } else if (!user.googleId) {
       user = await this.userRepository.updateUser(user.id, {
         googleId: profile.googleId,
+        name: profile.name ?? user.name,
+        picture: profile.picture ?? user.picture,
       });
     }
 

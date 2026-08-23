@@ -6,4 +6,6 @@ export type UpdateUserRepositoryInput = {
   googleId?: string;
   role?: Role;
   status?: Status;
+  name?: string | null;
+  picture?: string | null;
 };

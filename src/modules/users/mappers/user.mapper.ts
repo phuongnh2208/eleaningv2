@@ -5,6 +5,9 @@ export class UserMapper {
     return {
       id: user.id,
       email: user.email,
+      name: user.name ?? null,
+      picture: user.picture ?? null,
+      hasGoogleAccount: Boolean(user.googleId),
       role: user.role,
       status: user.status,
       createdAt: user.createdAt,

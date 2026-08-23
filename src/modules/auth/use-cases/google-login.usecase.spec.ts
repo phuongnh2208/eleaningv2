@@ -7,6 +7,7 @@ import { PasswordHasherStrategy } from 'src/common/secret/hashing/password-hashe
 import { AppException } from 'src/common/exceptions/app.exception';
 import { AuthError } from '../constants/auth.errors';
 import { Role, Status, SessionStatus } from 'src/generated/prisma/client';
+import { EventDispatcher } from 'src/common/events/event-dispatcher';
 
 describe('GoogleLoginUseCase', () => {
   let useCase: GoogleLoginUseCase;
@@ -14,6 +15,7 @@ describe('GoogleLoginUseCase', () => {
   let mockSessionRepository: Partial<SessionRepository>;
   let mockAuthTokenFactory: Partial<AuthTokenFactory>;
   let mockPasswordHasherStrategy: Partial<PasswordHasherStrategy>;
+  let mockEventDispatcher: Partial<EventDispatcher>;
 
   const mockGoogleUser = {
     googleId: 'google-123',
@@ -65,6 +67,10 @@ describe('GoogleLoginUseCase', () => {
       hash: jest.fn(),
     };
 
+    mockEventDispatcher = {
+      dispatch: jest.fn(),
+    };
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         GoogleLoginUseCase,
@@ -75,6 +81,7 @@ describe('GoogleLoginUseCase', () => {
           provide: PasswordHasherStrategy,
           useValue: mockPasswordHasherStrategy,
         },
+        { provide: EventDispatcher, useValue: mockEventDispatcher },
       ],
     }).compile();
 
@@ -174,6 +181,8 @@ describe('GoogleLoginUseCase', () => {
       );
       expect(mockUserRepository.updateUser).toHaveBeenCalledWith(1, {
         googleId: 'google-123',
+        name: undefined,
+        picture: undefined,
       });
       expect(result).toEqual(mockLoginResponse);
     });
@@ -198,10 +207,13 @@ describe('GoogleLoginUseCase', () => {
         email: 'test@gmail.com',
         googleId: 'google-123',
         passwordHash: null,
+        name: null,
+        picture: null,
       });
       expect(
         mockSessionRepository.revokeAllActiveByUserId,
       ).toHaveBeenCalledWith(2);
+      expect(mockEventDispatcher.dispatch).toHaveBeenCalledTimes(1);
       expect(result).toEqual(mockLoginResponse);
     });
   });

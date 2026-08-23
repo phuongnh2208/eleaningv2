@@ -31,8 +31,8 @@ describe('RolesGuard', () => {
           getResponse: () => ({}),
           getNext: () => ({}),
         }) as never,
-      getHandler: jest.fn(() => mockRequest),
-      getClass: jest.fn(() => ({})),
+      getHandler: jest.fn(() => mockRequest) as never,
+      getClass: jest.fn(() => ({})) as never,
     };
 
     guard = new RolesGuard(mockReflector as unknown as Reflector);
@@ -49,8 +49,8 @@ describe('RolesGuard', () => {
 
     expect(result).toBe(true);
     expect(mockReflector.getAllAndOverride).toHaveBeenCalledWith('roles', [
-      mockExecutionContext.getHandler(),
-      mockExecutionContext.getClass(),
+      mockExecutionContext.getHandler!(),
+      mockExecutionContext.getClass!(),
     ]);
   });
 

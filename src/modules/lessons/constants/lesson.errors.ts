@@ -36,4 +36,21 @@ export const LessonError = {
     message: 'Bạn chưa có quyền xem video bài học này',
     statusCode: HttpStatus.FORBIDDEN,
   },
+  DRIVE_FOLDER_URL_INVALID: {
+    code: 'LESSON.DRIVE_FOLDER_URL_INVALID',
+    message: 'Link thư mục Google Drive không hợp lệ',
+    statusCode: HttpStatus.BAD_REQUEST,
+  },
+  DRIVE_NOT_CONFIGURED: {
+    code: 'LESSON.DRIVE_NOT_CONFIGURED',
+    message:
+      'Chưa cấu hình GOOGLE_SERVICE_ACCOUNT_KEY_PATH — không thể đọc thư mục Drive',
+    statusCode: HttpStatus.SERVICE_UNAVAILABLE,
+  },
+  DRIVE_FOLDER_UNREADABLE: {
+    code: 'LESSON.DRIVE_FOLDER_UNREADABLE',
+    message:
+      'Không đọc được thư mục Drive — hãy chắc chắn đã chia sẻ thư mục cho email service account',
+    statusCode: HttpStatus.BAD_GATEWAY,
+  },
 } as const;

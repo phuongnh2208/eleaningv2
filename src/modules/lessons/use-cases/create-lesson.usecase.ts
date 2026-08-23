@@ -54,7 +54,7 @@ export class CreateLessonUseCase {
 
     return {
       provider: VideoProvider.GOOGLE_DRIVE,
-      externalId: parsed.externalId,
+      driveFileId: parsed.driveFileId,
       embedUrl: parsed.embedUrl,
     };
   }

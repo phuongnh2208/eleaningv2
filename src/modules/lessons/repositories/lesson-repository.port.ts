@@ -14,7 +14,7 @@ export type LessonData = {
 
 export type VideoData = {
   provider: VideoProvider;
-  externalId: string | null;
+  driveFileId: string | null;
   embedUrl: string;
 };
 

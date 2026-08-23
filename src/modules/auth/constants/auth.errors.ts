@@ -21,9 +21,19 @@ export const AuthError = {
     message: 'Tính năng đăng nhập Google chưa được cấu hình',
     statusCode: HttpStatus.SERVICE_UNAVAILABLE,
   },
+  GOOGLE_ID_TOKEN_INVALID: {
+    code: 'AUTH.GOOGLE_ID_TOKEN_INVALID',
+    message: 'Google ID token không hợp lệ',
+    statusCode: HttpStatus.UNAUTHORIZED,
+  },
   EMAIL_ALREADY_EXISTS: {
     code: 'AUTH.EMAIL_ALREADY_EXISTS',
     message: 'Email đã tồn tại',
+    statusCode: HttpStatus.CONFLICT,
+  },
+  GOOGLE_ALREADY_LINKED_TO_ANOTHER_ACCOUNT: {
+    code: 'AUTH.GOOGLE_ALREADY_LINKED_TO_ANOTHER_ACCOUNT',
+    message: 'Tài khoản Google này đã được liên kết với một tài khoản khác',
     statusCode: HttpStatus.CONFLICT,
   },
   REFRESH_TOKEN_INVALID: {

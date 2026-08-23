@@ -2,6 +2,7 @@ import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import {
   CourseAccessType,
   CourseStatus,
+  EnrollmentStatus,
   LessonAccessType,
   Role,
 } from 'src/generated/prisma/client';
@@ -11,7 +12,7 @@ import { PrismaService } from 'prisma/prisma.service';
 
 type AuthenticatedRequest = {
   params: { id?: string };
-  user: { id: number; role: Role };
+  user: { id: number; role: Role; email: string };
 };
 
 @Injectable()
@@ -50,7 +51,25 @@ export class VideoAccessGuard implements CanActivate {
       (lesson.accessType === LessonAccessType.INHERIT &&
         lesson.course.accessType === CourseAccessType.FREE);
 
-    if (!isFreeLesson) {
+    if (isFreeLesson) {
+      return true;
+    }
+
+    const enrollment = await this.prisma.enrollment.findFirst({
+      where: {
+        courseId: lesson.courseId,
+        status: EnrollmentStatus.ACTIVE,
+        OR: [{ userId: request.user.id }, { contactEmail: request.user.email }],
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    const isActiveEnrollment =
+      !!enrollment &&
+      enrollment.status === EnrollmentStatus.ACTIVE &&
+      (!enrollment.expiresAt || enrollment.expiresAt > new Date());
+
+    if (!isActiveEnrollment) {
       throw new AppException(LessonError.VIDEO_ACCESS_DENIED);
     }
 

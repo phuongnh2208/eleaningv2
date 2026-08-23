@@ -63,6 +63,12 @@ export class UserController {
   }
 
   @UseGuards(JwtAuthGuard)
+  @Get('me')
+  async findMe(@Req() req: AuthenticatedRequest) {
+    return await this.findUserByIdUseCase.excutive(req.user, req.user.id);
+  }
+
+  @UseGuards(JwtAuthGuard)
   @Get(':id')
   async findOne(@Req() req: AuthenticatedRequest, @Param('id') id: string) {
     return await this.findUserByIdUseCase.excutive(req.user, Number(id));

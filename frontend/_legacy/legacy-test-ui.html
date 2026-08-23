@@ -1,0 +1,670 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8" />
+<title>E-Learning · Test UI</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<style>
+  :root {
+    --bg: #f4f6fb;
+    --card: #ffffff;
+    --border: #e4e8f0;
+    --text: #1c2333;
+    --muted: #6b7386;
+    --primary: #4f5df1;
+    --primary-dark: #3d47c9;
+    --free: #17a673;
+    --paid: #e07a1f;
+    --danger: #d92d4c;
+    --ok: #17a673;
+    --radius: 12px;
+    --shadow: 0 1px 2px rgba(20,25,40,.04), 0 8px 24px rgba(20,25,40,.06);
+  }
+  * { box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', system-ui, Arial, sans-serif;
+    margin: 0;
+    background:
+      radial-gradient(1200px 500px at 10% -10%, #eef1ff 0%, transparent 60%),
+      radial-gradient(900px 500px at 110% 10%, #eafbf4 0%, transparent 55%),
+      var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+  .shell { max-width: 1040px; margin: 0 auto; padding: 28px 20px 60px; }
+  header.hero {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 22px;
+  }
+  .hero h1 { font-size: 22px; margin: 0 0 2px; display: flex; align-items: center; gap: 8px; }
+  .hero p { margin: 0; color: var(--muted); font-size: 13px; }
+  .whoami-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 10px 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 13px;
+  }
+  .avatar {
+    width: 30px; height: 30px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary), #8b93ff);
+    color: #fff; display: flex; align-items: center; justify-content: center;
+    font-weight: 600; font-size: 13px; flex-shrink: 0;
+  }
+  .who-name { font-weight: 600; }
+  .who-role { color: var(--muted); font-size: 11px; }
+  button.linklike { background: none; border: none; color: var(--danger); cursor: pointer; font-size: 12px; padding: 0; }
+
+  .config-bar {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 12px 16px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 18px;
+    font-size: 13px;
+  }
+  .config-bar label { color: var(--muted); font-weight: 600; }
+
+  .tabs {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 18px;
+    flex-wrap: wrap;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 6px;
+    box-shadow: var(--shadow);
+  }
+  .tabs button {
+    flex: 1 1 auto;
+    background: transparent;
+    color: var(--muted);
+    border: none;
+    padding: 9px 14px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background .15s, color .15s;
+    white-space: nowrap;
+  }
+  .tabs button:hover { background: #f1f2ff; color: var(--text); }
+  .tabs button.active { background: var(--primary); color: #fff; }
+
+  .tabpage { display: none; animation: fade .15s ease; }
+  .tabpage.active { display: grid; gap: 16px; }
+  @keyframes fade { from { opacity: 0; transform: translateY(3px); } to { opacity: 1; transform: none; } }
+
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 18px 20px;
+  }
+  .card h2 { font-size: 15px; margin: 0 0 4px; display: flex; align-items: center; gap: 6px; }
+  .card .hint { color: var(--muted); font-size: 12.5px; margin: 0 0 12px; line-height: 1.5; }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 760px) { .grid-2 { grid-template-columns: 1fr; } }
+
+  .field { margin-bottom: 10px; }
+  .field label { display: block; font-size: 12px; font-weight: 600; color: var(--muted); margin-bottom: 4px; }
+  input, select, textarea {
+    width: 100%;
+    padding: 9px 11px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 13.5px;
+    background: #fbfcfe;
+    color: var(--text);
+    font-family: inherit;
+  }
+  input:focus, select:focus, textarea:focus { outline: none; border-color: var(--primary); background: #fff; }
+  textarea { min-height: 64px; resize: vertical; }
+  .row-inline { display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-end; }
+  .row-inline .field { flex: 1 1 160px; margin-bottom: 0; }
+  .checkbox-field { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--text); }
+  .checkbox-field input { width: auto; }
+
+  button.btn {
+    background: var(--primary);
+    color: #fff;
+    border: none;
+    padding: 9px 16px;
+    border-radius: 8px;
+    font-size: 13.5px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background .15s, transform .05s;
+  }
+  button.btn:hover { background: var(--primary-dark); }
+  button.btn:active { transform: scale(.98); }
+  button.btn.secondary { background: #eef0fb; color: var(--primary-dark); }
+  button.btn.secondary:hover { background: #e2e5fb; }
+  button.btn.small { padding: 6px 11px; font-size: 12.5px; }
+  button.btn:disabled { opacity: .5; cursor: not-allowed; }
+
+  pre.result {
+    background: #10131c;
+    color: #d7dcec;
+    padding: 12px 14px;
+    border-radius: 9px;
+    overflow-x: auto;
+    font-size: 12px;
+    white-space: pre-wrap;
+    word-break: break-word;
+    margin: 10px 0 0;
+    border-left: 3px solid var(--ok);
+  }
+  pre.result.err { border-left-color: var(--danger); color: #ffd3dc; }
+
+  .list { display: grid; gap: 10px; margin-top: 12px; }
+  .item {
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 14px;
+    background: #fbfcfe;
+  }
+  .item-top { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .item-title { font-weight: 600; font-size: 14px; }
+  .item-meta { color: var(--muted); font-size: 11.5px; margin-top: 2px; }
+  .item-desc { font-size: 13px; margin: 6px 0 8px; color: #37405a; }
+  .badge {
+    display: inline-block; padding: 2px 9px; border-radius: 20px;
+    font-size: 10.5px; font-weight: 700; letter-spacing: .3px; text-transform: uppercase;
+    background: #eee; color: #555;
+  }
+  .badge.free { background: #e3f8ee; color: var(--free); }
+  .badge.paid { background: #fdefe0; color: var(--paid); }
+  .badge.pub { background: #eef0fb; color: var(--primary-dark); }
+  .empty { color: var(--muted); font-size: 13px; padding: 10px 2px; }
+
+  iframe.video-frame {
+    width: 100%; height: 380px; border: 0; border-radius: 10px; margin-top: 10px;
+    box-shadow: var(--shadow);
+  }
+
+  .gsi-wrap { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .divider { display: flex; align-items: center; gap: 10px; color: var(--muted); font-size: 12px; margin: 14px 0; }
+  .divider::before, .divider::after { content: ""; flex: 1; height: 1px; background: var(--border); }
+
+  .note {
+    font-size: 12px;
+    color: #6b5300;
+    background: #fff8e0;
+    border: 1px solid #f0e2a8;
+    border-radius: 8px;
+    padding: 8px 11px;
+    margin-top: 10px;
+  }
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <header class="hero">
+    <div>
+      <h1>🎓 E-Learning — Test UI</h1>
+      <p>Giao diện thủ công để test backend NestJS (courses · lessons · video Google Drive · enrollment).</p>
+    </div>
+    <div class="whoami-card" id="whoamiCard">
+      <div class="avatar" id="whoAvatar">?</div>
+      <div>
+        <div class="who-name" id="whoName">Chưa đăng nhập</div>
+        <div class="who-role" id="whoRole"></div>
+      </div>
+      <button class="linklike" id="logoutBtn" onclick="logout()" style="display:none">Đăng xuất</button>
+    </div>
+  </header>
+
+  <div class="config-bar">
+    <label>API base URL</label>
+    <input id="apiBase" value="http://localhost:3000" style="max-width:240px" onchange="saveConfig()" />
+    <label>Google Client ID</label>
+    <input id="googleClientId" placeholder="xxxx.apps.googleusercontent.com" style="max-width:340px" onchange="saveConfig(); initGoogleButton();" />
+    <span class="note" style="margin:0; flex:1 1 260px">Client ID lấy từ <code>GOOGLE_CLIENT_ID</code> trong <code>.env</code> — đây không phải bí mật, có thể dùng trực tiếp ở frontend.</span>
+  </div>
+
+  <div class="tabs">
+    <button class="active" data-tab="auth" onclick="showTab('auth', event)">Đăng nhập</button>
+    <button data-tab="courses" onclick="showTab('courses', event)">Khóa học &amp; Video</button>
+    <button data-tab="enroll" onclick="showTab('enroll', event)">Đăng ký học (công khai)</button>
+    <button data-tab="me" onclick="showTab('me', event)">Tài khoản của tôi</button>
+    <button data-tab="admin" onclick="showTab('admin', event)">Quản trị</button>
+  </div>
+
+  <!-- AUTH -->
+  <div class="tabpage active" id="tab-auth">
+    <div class="card">
+      <h2>🔐 Đăng nhập bằng Google</h2>
+      <p class="hint">Dùng Google Identity Services thật: nhận <code>idToken</code> từ Google rồi gửi tới <code>POST /auth/google-login</code>, backend xác minh chữ ký/audience/issuer/email_verified trước khi cấp JWT nội bộ.</p>
+      <div class="gsi-wrap">
+        <div id="gsiButton"></div>
+        <span id="gsiStatus" class="hint" style="margin:0"></span>
+      </div>
+      <div id="googleLoginResult"></div>
+    </div>
+
+    <div class="divider">hoặc dùng email / mật khẩu</div>
+
+    <div class="grid-2">
+      <div class="card">
+        <h2>Đăng ký tài khoản</h2>
+        <div class="field"><label>Email</label><input id="regEmail" placeholder="you@example.com" /></div>
+        <div class="field"><label>Mật khẩu</label><input id="regPassword" type="password" placeholder="≥ 3 ký tự" /></div>
+        <button class="btn" onclick="register()">Đăng ký</button>
+        <div id="regResult"></div>
+      </div>
+      <div class="card">
+        <h2>Đăng nhập</h2>
+        <div class="field"><label>Email</label><input id="loginEmail" placeholder="you@example.com" /></div>
+        <div class="field"><label>Mật khẩu</label><input id="loginPassword" type="password" placeholder="mật khẩu" /></div>
+        <button class="btn" onclick="login()">Đăng nhập</button>
+        <div id="loginResult"></div>
+        <div class="note">Tài khoản mới luôn có role <b>USER</b>. Để test admin: mở <code>npx prisma studio</code>, đổi cột <code>role</code> của user thành <code>ADMIN</code>, đăng nhập lại.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- COURSES -->
+  <div class="tabpage" id="tab-courses">
+    <div class="card">
+      <h2>📚 Danh sách khóa học <span class="badge pub">public</span></h2>
+      <p class="hint">Ai cũng xem được thông tin khóa học/bài học mà không cần đăng nhập — chỉ xem <b>video</b> mới cần đăng nhập.</p>
+      <button class="btn secondary" onclick="loadCourses()">Tải danh sách khóa học</button>
+      <div id="courseList" class="list"></div>
+    </div>
+    <div class="card" id="lessonSection" style="display:none">
+      <h2>🎬 Bài học · <span id="currentCourseTitle"></span></h2>
+      <div id="lessonList" class="list"></div>
+      <div id="videoBox"></div>
+    </div>
+  </div>
+
+  <!-- PUBLIC ENROLL -->
+  <div class="tabpage" id="tab-enroll">
+    <div class="card">
+      <h2>💳 Đăng ký khóa học trả phí <span class="badge paid">form công khai</span></h2>
+      <p class="hint">Không cần tài khoản. Luồng: điền form → nhận email hướng dẫn chuyển khoản → chuyển khoản → Admin xác nhận & cấp quyền theo đúng Gmail đã điền → đăng nhập Google với Gmail đó để xem video.</p>
+      <div class="row-inline">
+        <div class="field"><label>Họ và tên</label><input id="pubName" placeholder="Nguyễn Văn A" /></div>
+        <div class="field"><label>Gmail dùng để học</label><input id="pubEmail" placeholder="ban@gmail.com" /></div>
+      </div>
+      <div class="row-inline">
+        <div class="field"><label>Số điện thoại</label><input id="pubPhone" placeholder="09xxxxxxxx" /></div>
+        <div class="field"><label>ID khóa học (paid)</label><input id="pubCourseId" type="number" placeholder="vd: 3" /></div>
+        <button class="btn" onclick="publicEnroll()">Gửi đăng ký</button>
+      </div>
+      <div id="pubResult"></div>
+    </div>
+  </div>
+
+  <!-- ME -->
+  <div class="tabpage" id="tab-me">
+    <div class="grid-2">
+      <div class="card">
+        <h2>📋 Enrollment của tôi</h2>
+        <p class="hint">Cần đăng nhập.</p>
+        <button class="btn secondary" onclick="loadMyEnrollments()">Tải danh sách</button>
+        <div id="myEnrollments"></div>
+      </div>
+      <div class="card">
+        <h2>🆓 Tự đăng ký khóa học miễn phí</h2>
+        <p class="hint">Cần đăng nhập.</p>
+        <div class="row-inline">
+          <div class="field"><label>ID khóa học</label><input id="selfEnrollCourseId" type="number" placeholder="vd: 1" /></div>
+          <button class="btn" onclick="selfEnroll()">Đăng ký</button>
+        </div>
+        <div id="selfEnrollResult"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ADMIN -->
+  <div class="tabpage" id="tab-admin">
+    <div class="grid-2">
+      <div class="card">
+        <h2>➕ Tạo khóa học</h2>
+        <div class="field"><label>Tiêu đề</label><input id="cTitle" placeholder="NestJS từ A-Z" /></div>
+        <div class="field"><label>Slug (duy nhất)</label><input id="cSlug" placeholder="nestjs-tu-a-z" /></div>
+        <div class="field"><label>Mô tả</label><textarea id="cDesc" placeholder="Mô tả ngắn"></textarea></div>
+        <div class="row-inline">
+          <div class="field"><label>Loại</label>
+            <select id="cAccessType"><option value="FREE">FREE</option><option value="PAID">PAID</option></select>
+          </div>
+          <div class="field"><label>Giá (nếu PAID)</label><input id="cPrice" type="number" placeholder="500000" /></div>
+          <div class="field"><label>Trạng thái</label>
+            <select id="cStatus"><option value="DRAFT">DRAFT</option><option value="PUBLISHED">PUBLISHED</option></select>
+          </div>
+        </div>
+        <button class="btn" onclick="createCourse()">Tạo khóa học</button>
+        <div id="createCourseResult"></div>
+      </div>
+
+      <div class="card">
+        <h2>🎥 Tạo bài học + gắn link Google Drive</h2>
+        <div class="row-inline">
+          <div class="field"><label>ID khóa học</label><input id="lCourseId" type="number" placeholder="vd: 1" /></div>
+          <div class="field"><label>Vị trí (position)</label><input id="lPosition" type="number" placeholder="1" /></div>
+        </div>
+        <div class="field"><label>Tiêu đề bài học</label><input id="lTitle" placeholder="Bài 1: Giới thiệu" /></div>
+        <div class="row-inline">
+          <div class="field"><label>Loại truy cập</label>
+            <select id="lAccessType">
+              <option value="INHERIT">INHERIT (theo khóa học)</option>
+              <option value="FREE">FREE</option>
+              <option value="PAID">PAID</option>
+            </select>
+          </div>
+          <div class="checkbox-field" style="padding-bottom:9px"><input type="checkbox" id="lPublished" checked /> Publish ngay</div>
+        </div>
+        <div class="field">
+          <label>Link Google Drive (dán vào đây)</label>
+          <input id="lVideoUrl" placeholder="https://drive.google.com/file/d/FILE_ID/view?usp=sharing" />
+        </div>
+        <p class="hint">Chấp nhận <code>/file/d/ID/view</code>, <code>open?id=ID</code>, <code>uc?id=ID</code>. Backend tự trích <code>driveFileId</code> và tạo <code>embedUrl</code> chuẩn <code>/preview</code>. Nhớ chia sẻ file Drive ở chế độ "Anyone with the link" để iframe load được — quyền của backend không thay thế quyền chia sẻ Drive.</p>
+        <button class="btn" onclick="createLesson()">Tạo bài học</button>
+        <div id="createLessonResult"></div>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="card">
+        <h2>✅ Xác nhận thanh toán → kích hoạt enrollment</h2>
+        <div class="row-inline">
+          <div class="field"><label>ID enrollment</label><input id="confirmEnrollmentId" type="number" placeholder="vd: 5" /></div>
+          <button class="btn" onclick="confirmPayment()">Xác nhận đã thanh toán</button>
+        </div>
+        <div id="confirmResult"></div>
+        <p class="hint">ID enrollment lấy từ response của form đăng ký / Prisma Studio.</p>
+      </div>
+      <div class="card">
+        <h2>🔍 Xem chi tiết một enrollment</h2>
+        <div class="row-inline">
+          <div class="field"><label>ID enrollment</label><input id="viewEnrollmentId" type="number" placeholder="vd: 5" /></div>
+          <button class="btn secondary" onclick="viewEnrollment()">Xem</button>
+        </div>
+        <div id="viewEnrollmentResult"></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const $ = (id) => document.getElementById(id);
+const apiBase = () => $('apiBase').value.replace(/\/$/, '');
+
+// ---------- config persistence ----------
+function saveConfig() {
+  localStorage.setItem('apiBase', $('apiBase').value);
+  localStorage.setItem('googleClientId', $('googleClientId').value);
+}
+(function restoreConfig() {
+  const base = localStorage.getItem('apiBase');
+  const cid = localStorage.getItem('googleClientId');
+  if (base) $('apiBase').value = base;
+  if (cid) $('googleClientId').value = cid;
+})();
+
+// ---------- tabs ----------
+function showTab(name, evt) {
+  document.querySelectorAll('.tabpage').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.tabs button').forEach(el => el.classList.remove('active'));
+  $('tab-' + name).classList.add('active');
+  (evt ? evt.target : document.querySelector(`.tabs button[data-tab="${name}"]`)).classList.add('active');
+}
+
+// ---------- session ----------
+function getToken() { return localStorage.getItem('accessToken'); }
+function getUser() { try { return JSON.parse(localStorage.getItem('user') || 'null'); } catch { return null; } }
+function saveSession(loginResponse) {
+  localStorage.setItem('accessToken', loginResponse.accessToken);
+  localStorage.setItem('refreshToken', loginResponse.refreshToken || '');
+  localStorage.setItem('user', JSON.stringify(loginResponse.user));
+  renderWhoAmI();
+}
+function logout() {
+  localStorage.removeItem('accessToken');
+  localStorage.removeItem('refreshToken');
+  localStorage.removeItem('user');
+  renderWhoAmI();
+}
+function renderWhoAmI() {
+  const u = getUser();
+  if (u) {
+    $('whoName').textContent = u.email;
+    $('whoRole').textContent = u.role;
+    $('whoAvatar').textContent = u.email[0].toUpperCase();
+    $('logoutBtn').style.display = 'inline';
+  } else {
+    $('whoName').textContent = 'Chưa đăng nhập';
+    $('whoRole').textContent = '';
+    $('whoAvatar').textContent = '?';
+    $('logoutBtn').style.display = 'none';
+  }
+}
+renderWhoAmI();
+
+// ---------- API helper ----------
+async function api(path, { method = 'GET', body, auth = false } = {}) {
+  const headers = { 'Content-Type': 'application/json' };
+  if (auth) {
+    const token = getToken();
+    if (!token) throw new Error('Chưa đăng nhập — vui lòng đăng nhập trước.');
+    headers['Authorization'] = 'Bearer ' + token;
+  }
+  const res = await fetch(apiBase() + path, {
+    method, headers, body: body !== undefined ? JSON.stringify(body) : undefined,
+  });
+  let data = null;
+  try { data = await res.json(); } catch { /* no body */ }
+  if (!res.ok) {
+    const message = (data && (data.message || data.error)) || res.statusText;
+    const err = new Error(typeof message === 'string' ? message : JSON.stringify(message));
+    err.status = res.status; err.data = data;
+    throw err;
+  }
+  return data;
+}
+function showResult(elId, ok, payload) {
+  $(elId).innerHTML = `<pre class="result ${ok ? '' : 'err'}">${escapeHtml(typeof payload === 'string' ? payload : JSON.stringify(payload, null, 2))}</pre>`;
+}
+function escapeHtml(str) { return String(str).replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c])); }
+
+// ---------- Google Identity Services ----------
+let gsiInitialized = false;
+function initGoogleButton() {
+  const clientId = $('googleClientId').value.trim();
+  const holder = $('gsiButton');
+  holder.innerHTML = '';
+  $('gsiStatus').textContent = '';
+  if (!clientId || typeof google === 'undefined' || !google.accounts) {
+    $('gsiStatus').textContent = clientId
+      ? 'Đang tải thư viện Google...'
+      : 'Nhập Google Client ID ở trên để hiện nút đăng nhập Google.';
+    return;
+  }
+  google.accounts.id.initialize({
+    client_id: clientId,
+    callback: onGoogleCredential,
+  });
+  google.accounts.id.renderButton(holder, {
+    theme: 'outline', size: 'large', type: 'standard', text: 'signin_with', shape: 'pill',
+  });
+  gsiInitialized = true;
+}
+async function onGoogleCredential(response) {
+  try {
+    const data = await api('/auth/google-login', {
+      method: 'POST',
+      body: { idToken: response.credential },
+    });
+    saveSession(data);
+    showResult('googleLoginResult', true, data);
+  } catch (e) {
+    showResult('googleLoginResult', false, e.message);
+  }
+}
+window.addEventListener('load', () => {
+  let tries = 0;
+  const t = setInterval(() => {
+    tries++;
+    if (typeof google !== 'undefined' && google.accounts) { clearInterval(t); initGoogleButton(); }
+    else if (tries > 40) clearInterval(t);
+  }, 250);
+});
+
+// ---------- AUTH (email/password) ----------
+async function register() {
+  try {
+    const data = await api('/auth/register', { method: 'POST', body: { email: $('regEmail').value, password: $('regPassword').value } });
+    showResult('regResult', true, data);
+  } catch (e) { showResult('regResult', false, e.message); }
+}
+async function login() {
+  try {
+    const data = await api('/auth/login', { method: 'POST', body: { email: $('loginEmail').value, password: $('loginPassword').value } });
+    saveSession(data);
+    showResult('loginResult', true, data);
+  } catch (e) { showResult('loginResult', false, e.message); }
+}
+
+// ---------- COURSES / LESSONS / VIDEO ----------
+let currentCourseId = null;
+async function loadCourses() {
+  try {
+    const data = await api('/courses');
+    const items = Array.isArray(data) ? data : (data.items || data.data || []);
+    $('courseList').innerHTML = items.map(c => `
+      <div class="item">
+        <div class="item-top">
+          <span class="item-title">${escapeHtml(c.title)}</span>
+          <span class="badge ${c.accessType === 'FREE' ? 'free' : 'paid'}">${c.accessType}</span>
+          <span class="badge">${c.status}</span>
+        </div>
+        <div class="item-meta">id=${c.id} · slug=${escapeHtml(c.slug)}${c.price ? ' · giá: ' + c.price + ' ' + (c.currency || '') : ''}</div>
+        <div class="item-desc">${escapeHtml(c.description || '')}</div>
+        <button class="btn small" onclick="openCourse(${c.id}, '${escapeHtml(c.title).replace(/'/g, "\\'")}')">Xem bài học</button>
+      </div>
+    `).join('') || '<div class="empty">Không có khóa học nào (đã publish).</div>';
+  } catch (e) { $('courseList').innerHTML = `<div class="empty">${escapeHtml(e.message)}</div>`; }
+}
+async function openCourse(courseId, title) {
+  currentCourseId = courseId;
+  $('currentCourseTitle').textContent = title;
+  $('lessonSection').style.display = 'block';
+  $('videoBox').innerHTML = '';
+  try {
+    const lessons = await api(`/courses/${courseId}/lessons`);
+    const items = Array.isArray(lessons) ? lessons : (lessons.items || []);
+    $('lessonList').innerHTML = items.map(l => `
+      <div class="item">
+        <div class="item-top">
+          <span class="item-title">#${l.position} ${escapeHtml(l.title)}</span>
+          <span class="badge ${l.accessType === 'PAID' ? 'paid' : 'free'}">${l.accessType}</span>
+          <span class="badge">${l.isPublished ? 'published' : 'draft'}</span>
+        </div>
+        <div class="item-meta">lessonId=${l.id}</div>
+        <div class="item-desc">${escapeHtml(l.description || '')}</div>
+        <button class="btn small" onclick="watchVideo(${l.id})">▶ Xem video (cần đăng nhập)</button>
+      </div>
+    `).join('') || '<div class="empty">Khóa học chưa có bài học nào.</div>';
+  } catch (e) { $('lessonList').innerHTML = `<div class="empty">${escapeHtml(e.message)}</div>`; }
+}
+async function watchVideo(lessonId) {
+  $('videoBox').innerHTML = '<div class="empty">Đang tải video…</div>';
+  try {
+    const data = await api(`/lessons/${lessonId}/video`, { auth: true });
+    const embedUrl = data.video && data.video.embedUrl;
+    if (!embedUrl) { $('videoBox').innerHTML = '<div class="empty">Không có embedUrl trong response.</div>'; return; }
+    $('videoBox').innerHTML = `<iframe class="video-frame" src="${embedUrl}" allow="autoplay" allowfullscreen></iframe><div class="item-meta" style="margin-top:6px">embedUrl: ${escapeHtml(embedUrl)}</div>`;
+  } catch (e) {
+    $('videoBox').innerHTML = `<div class="empty" style="color:var(--danger)">${escapeHtml(e.message)} ${e.status ? '(HTTP ' + e.status + ')' : ''}</div>`;
+  }
+}
+
+// ---------- PUBLIC ENROLLMENT FORM ----------
+async function publicEnroll() {
+  try {
+    const data = await api('/enrollments/public', {
+      method: 'POST',
+      body: {
+        contactName: $('pubName').value,
+        contactEmail: $('pubEmail').value,
+        contactPhone: $('pubPhone').value,
+        courseId: Number($('pubCourseId').value),
+      },
+    });
+    showResult('pubResult', true, data);
+  } catch (e) { showResult('pubResult', false, e.message); }
+}
+
+// ---------- ME ----------
+async function loadMyEnrollments() {
+  try { const data = await api('/enrollments/me', { auth: true }); showResult('myEnrollments', true, data); }
+  catch (e) { showResult('myEnrollments', false, e.message); }
+}
+async function selfEnroll() {
+  try {
+    const courseId = Number($('selfEnrollCourseId').value);
+    const data = await api(`/enrollments/courses/${courseId}`, { method: 'POST', auth: true });
+    showResult('selfEnrollResult', true, data);
+  } catch (e) { showResult('selfEnrollResult', false, e.message); }
+}
+
+// ---------- ADMIN ----------
+async function createCourse() {
+  try {
+    const body = {
+      title: $('cTitle').value, slug: $('cSlug').value, description: $('cDesc').value || undefined,
+      accessType: $('cAccessType').value, status: $('cStatus').value,
+    };
+    const price = $('cPrice').value; if (price) body.price = Number(price);
+    const data = await api('/courses', { method: 'POST', auth: true, body });
+    showResult('createCourseResult', true, data);
+  } catch (e) { showResult('createCourseResult', false, e.message); }
+}
+async function createLesson() {
+  try {
+    const courseId = Number($('lCourseId').value);
+    const body = {
+      title: $('lTitle').value, position: Number($('lPosition').value), accessType: $('lAccessType').value,
+      isPublished: $('lPublished').checked, videoUrl: $('lVideoUrl').value || undefined,
+    };
+    const data = await api(`/courses/${courseId}/lessons`, { method: 'POST', auth: true, body });
+    showResult('createLessonResult', true, data);
+  } catch (e) { showResult('createLessonResult', false, e.message); }
+}
+async function confirmPayment() {
+  try {
+    const id = Number($('confirmEnrollmentId').value);
+    const data = await api(`/enrollments/${id}/confirm-payment`, { method: 'POST', auth: true });
+    showResult('confirmResult', true, data);
+  } catch (e) { showResult('confirmResult', false, e.message); }
+}
+async function viewEnrollment() {
+  try {
+    const id = Number($('viewEnrollmentId').value);
+    const data = await api(`/enrollments/${id}`, { auth: true });
+    showResult('viewEnrollmentResult', true, data);
+  } catch (e) { showResult('viewEnrollmentResult', false, e.message); }
+}
+</script>
+</body>
+</html>

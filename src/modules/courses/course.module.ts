@@ -29,5 +29,6 @@ import { RolesGuard } from '../auth/guards/roles.guard';
       useExisting: CourseRepository,
     },
   ],
+  exports: [CourseRepositoryPort],
 })
 export class CourseModule {}

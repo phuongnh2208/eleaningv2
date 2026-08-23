@@ -7,11 +7,29 @@ const GOOGLE_DRIVE_HOSTS = new Set([
 ]);
 
 export type GoogleDriveVideoReference = {
-  externalId: string;
+  driveFileId: string;
   embedUrl: string;
 };
 
 export class GoogleDriveUrlUtil {
+  static parseFolderId(value: string): string | null {
+    try {
+      const url = new URL(value.trim());
+
+      if (!['http:', 'https:'].includes(url.protocol)) return null;
+      if (!GOOGLE_DRIVE_HOSTS.has(url.hostname.toLowerCase())) return null;
+
+      const folderPathMatch = url.pathname.match(/\/folders\/([^/?]+)/);
+      const folderId = folderPathMatch?.[1] ?? url.searchParams.get('id');
+
+      if (!folderId || !GOOGLE_DRIVE_ID_PATTERN.test(folderId)) return null;
+
+      return folderId;
+    } catch {
+      return null;
+    }
+  }
+
   static parse(value: string): GoogleDriveVideoReference | null {
     try {
       const url = new URL(value.trim());
@@ -20,13 +38,14 @@ export class GoogleDriveUrlUtil {
       if (!GOOGLE_DRIVE_HOSTS.has(url.hostname.toLowerCase())) return null;
 
       const filePathMatch = url.pathname.match(/\/file\/d\/([^/]+)/);
-      const externalId = filePathMatch?.[1] ?? url.searchParams.get('id');
+      const driveFileId = filePathMatch?.[1] ?? url.searchParams.get('id');
 
-      if (!externalId || !GOOGLE_DRIVE_ID_PATTERN.test(externalId)) return null;
+      if (!driveFileId || !GOOGLE_DRIVE_ID_PATTERN.test(driveFileId))
+        return null;
 
       return {
-        externalId,
-        embedUrl: `https://drive.google.com/file/d/${externalId}/preview`,
+        driveFileId,
+        embedUrl: `https://drive.google.com/file/d/${driveFileId}/preview`,
       };
     } catch {
       return null;
