@@ -1,15 +1,15 @@
-import { Injectable } from '@nestjs/common';
+﻿import { Injectable } from '@nestjs/common';
 import { EnrollmentMapper } from '../mappers/enrollment.mapper';
 import { EnrollmentRepositoryPort } from '../repositories/enrollment-repository.port';
 
 @Injectable()
-export class ListMyEnrollmentsUseCase {
+export class ListAllEnrollmentsUseCase {
   constructor(
     private readonly enrollmentRepository: EnrollmentRepositoryPort,
   ) {}
 
-  async execute(userId: number, email?: string) {
-    const enrollments = await this.enrollmentRepository.findByUser(userId, email);
+  async execute(status?: string) {
+    const enrollments = await this.enrollmentRepository.findAll(status);
     return enrollments.map((enrollment) =>
       EnrollmentMapper.toResponse(enrollment),
     );

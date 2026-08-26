@@ -1,13 +1,21 @@
 import { useState } from 'react';
+import {
+  Play,
+  Loader2,
+  Lock,
+  Unlock,
+  AlertCircle,
+  RotateCcw,
+  UserPlus,
+  Video,
+} from 'lucide-react';
 
 const ACCESS_LABELS = {
-  FREE: { text: 'Video miễn phí — cần đăng nhập', color: '#4caf50' },
-  PAID: { text: 'Video khóa học trả phí', color: '#ff9800' },
-  INHERIT: { text: 'Theo khóa học', color: '#2196f3' },
+  FREE: { text: 'Video miễn phí — cần đăng nhập', color: '#16a34a', icon: Unlock },
+  PAID: { text: 'Video khóa học trả phí', color: '#ea580c', icon: Lock },
+  INHERIT: { text: 'Theo khóa học', color: '#2563eb', icon: Video },
 };
 
-// Video is fetched lazily (on click) so we never call the protected video
-// endpoint — and never show an embedUrl/driveFileId — until the user asks.
 export default function VideoCard({ lesson, onLoadVideo, onRequestEnroll }) {
   const [state, setState] = useState('idle'); // idle | loading | loaded | error
   const [video, setVideo] = useState(null);
@@ -16,8 +24,10 @@ export default function VideoCard({ lesson, onLoadVideo, onRequestEnroll }) {
 
   const label = ACCESS_LABELS[lesson.accessType] ?? {
     text: lesson.accessType,
-    color: '#999',
+    color: '#6b7280',
+    icon: Video,
   };
+  const LabelIcon = label.icon;
 
   async function handleOpen() {
     if (state === 'loaded') {
@@ -41,8 +51,17 @@ export default function VideoCard({ lesson, onLoadVideo, onRequestEnroll }) {
   return (
     <article className="video-card">
       <div className="video-card-top">
-        <div className="video-label" style={{ backgroundColor: label.color }}>
-          {label.text}
+        <div
+          className="video-label"
+          style={{
+            backgroundColor: label.color,
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 4,
+          }}
+        >
+          <LabelIcon size={12} />
+          <span>{label.text}</span>
         </div>
         <div className="video-meta">
           <span>#{lesson.position}</span>
@@ -65,19 +84,28 @@ export default function VideoCard({ lesson, onLoadVideo, onRequestEnroll }) {
         />
       ) : state === 'error' ? (
         <div className="video-blocked">
-          <p>{errorMessage}</p>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, color: '#dc2626' }}>
+            <AlertCircle size={20} />
+            <p style={{ margin: 0 }}>{errorMessage}</p>
+          </div>
           <div className="video-blocked-actions">
             {deniedStatus === 403 && onRequestEnroll && (
               <button
                 className="btn-primary"
                 onClick={onRequestEnroll}
                 type="button"
+                style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}
               >
-                Đăng ký khóa học
+                <UserPlus size={14} /> Đăng ký khóa học
               </button>
             )}
-            <button className="link-button" onClick={handleOpen} type="button">
-              Thử lại
+            <button
+              className="link-button"
+              onClick={handleOpen}
+              type="button"
+              style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}
+            >
+              <RotateCcw size={14} /> Thử lại
             </button>
           </div>
         </div>
@@ -87,9 +115,19 @@ export default function VideoCard({ lesson, onLoadVideo, onRequestEnroll }) {
           onClick={handleOpen}
           type="button"
           disabled={state === 'loading'}
+          style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}
         >
-          <span className="play-icon">▶</span>
-          <span>{state === 'loading' ? 'Đang tải…' : 'Nhấn để xem video'}</span>
+          {state === 'loading' ? (
+            <>
+              <Loader2 size={20} className="animate-spin" />
+              <span>Đang tải…</span>
+            </>
+          ) : (
+            <>
+              <Play size={20} />
+              <span>Nhấn để xem video</span>
+            </>
+          )}
         </button>
       )}
     </article>

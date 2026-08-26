@@ -32,7 +32,11 @@ export abstract class EnrollmentRepositoryPort {
     userId: number,
     courseId: number,
   ): Promise<EnrollmentWithRelations | null>;
-  abstract findByUser(userId: number): Promise<EnrollmentWithRelations[]>;
+  abstract findByUser(
+    userId: number,
+    email?: string,
+  ): Promise<EnrollmentWithRelations[]>;
+  abstract findAll(status?: string): Promise<EnrollmentWithRelations[]>;
   abstract createFree(
     userId: number,
     courseId: number,

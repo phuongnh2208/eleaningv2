@@ -1,4 +1,18 @@
 import { useCallback, useEffect, useState } from 'react';
+import {
+  BookOpen,
+  GraduationCap,
+  ShieldCheck,
+  LogOut,
+  User,
+  Mail,
+  Shield,
+  CheckCircle2,
+  AlertCircle,
+  Link,
+  LogIn,
+  UserPlus,
+} from 'lucide-react';
 import * as api from './api.js';
 import GoogleLoginButton from './components/GoogleLoginButton.jsx';
 import CoursesPage from './pages/CoursesPage.jsx';
@@ -20,6 +34,7 @@ function App() {
   const [message, setMessage] = useState(null);
   const [tab, setTab] = useState('courses');
   const [enrollTarget, setEnrollTarget] = useState(null);
+  const [selectedCourseId, setSelectedCourseId] = useState(null);
 
   const [loginEmail, setLoginEmail] = useState('');
   const [loginPassword, setLoginPassword] = useState('');
@@ -35,9 +50,6 @@ function App() {
     setUser(data.user);
   }, []);
 
-  // Bootstrap session on reload: if a token is present, ask the backend
-  // who we are via GET /users/me. An expired/invalid token clears the
-  // session and falls back to logged-out state.
   useEffect(() => {
     if (!token) return;
     let cancelled = false;
@@ -57,8 +69,7 @@ function App() {
     return () => {
       cancelled = true;
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [token]);
 
   async function handleGoogleCredential(idToken) {
     try {
@@ -94,9 +105,6 @@ function App() {
     }
   }
 
-  // Attaches a verified Google identity to the current (email/password)
-  // account. Does not change the session/token — only unlocks the "correct
-  // Google account" requirement for paid-video access.
   async function handleLinkGoogle(idToken) {
     try {
       const data = await api.linkGoogleAccount(idToken);
@@ -116,6 +124,8 @@ function App() {
     setToken(null);
     setUser(null);
     setMessage(null);
+    setTab('courses');
+    setSelectedCourseId(null);
     window.google?.accounts?.id?.disableAutoSelect?.();
   }
 
@@ -128,7 +138,9 @@ function App() {
 
       <header className="header">
         <div className="brand-block">
-          <span className="eyebrow">E-Learning</span>
+          <span className="eyebrow" style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+            <GraduationCap size={15} /> E-Learning
+          </span>
           <h1>Học trực tuyến qua video Google Drive</h1>
           <p>Xem khóa học, đăng ký, và học qua video Google Drive theo đúng quyền của bạn.</p>
         </div>
@@ -144,25 +156,37 @@ function App() {
                 </div>
               )}
               <div className="user-copy">
-                <span className="user-name">{user?.name || user?.email || 'Đang xác thực...'}</span>
-                <span className="user-email">{user?.email}</span>
-                <span className="user-class">{user?.role}</span>
+                <span className="user-name" style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                  <User size={13} /> {user?.name || user?.email || 'Đang xác thực...'}
+                </span>
+                <span className="user-email" style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                  <Mail size={13} /> {user?.email}
+                </span>
+                <span className="user-class" style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                  <Shield size={12} /> {user?.role}
+                </span>
                 {!user?.hasGoogleAccount && (
                   <div className="link-google-row">
-                    <span className="hint" style={{ margin: 0 }}>
-                      Liên kết Google để tham gia khóa học:
+                    <span className="hint" style={{ margin: 0, display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                      <Link size={12} /> Liên kết Google để tham gia khóa học:
                     </span>
                     <GoogleLoginButton onCredential={handleLinkGoogle} />
                   </div>
                 )}
               </div>
-              <button className="btn-logout" onClick={logout} type="button">
-                Đăng xuất
+              <button
+                className="btn-logout"
+                onClick={logout}
+                type="button"
+                style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}
+              >
+                <LogOut size={14} /> Đăng xuất
               </button>
             </div>
           ) : (
             <div className="auth-card">
-              <span className="auth-title">
+              <span className="auth-title" style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                {authMode === 'login' ? <LogIn size={16} /> : <UserPlus size={16} />}
                 {authMode === 'login' ? 'Đăng nhập' : 'Đăng ký'}
               </span>
               <span className="auth-label">
@@ -184,8 +208,8 @@ function App() {
                       value={loginPassword}
                       onChange={(e) => setLoginPassword(e.target.value)}
                     />
-                    <button className="btn-secondary" type="submit">
-                      Đăng nhập
+                    <button className="btn-secondary" type="submit" style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
+                      <LogIn size={14} /> Đăng nhập
                     </button>
                   </form>
                 ) : (
@@ -201,8 +225,8 @@ function App() {
                       value={regPassword}
                       onChange={(e) => setRegPassword(e.target.value)}
                     />
-                    <button className="btn-secondary" type="submit">
-                      Đăng ký
+                    <button className="btn-secondary" type="submit" style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
+                      <UserPlus size={14} /> Đăng ký
                     </button>
                   </form>
                 )}
@@ -222,7 +246,10 @@ function App() {
       </header>
 
       {message && (
-        <div className={`message message-${message.type}`}>{message.text}</div>
+        <div className={`message message-${message.type}`} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          {message.type === 'success' ? <CheckCircle2 size={16} /> : <AlertCircle size={16} />}
+          <span>{message.text}</span>
+        </div>
       )}
 
       <nav className="tabs">
@@ -230,15 +257,19 @@ function App() {
           className={tab === 'courses' ? 'active' : ''}
           onClick={() => setTab('courses')}
           type="button"
+          style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}
         >
+          <BookOpen size={16} />
           Khóa học
         </button>
-        {token && (
+        {token && !isAdmin && (
           <button
             className={tab === 'me' ? 'active' : ''}
             onClick={() => setTab('me')}
             type="button"
+            style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}
           >
+            <GraduationCap size={16} />
             Khóa học của tôi
           </button>
         )}
@@ -247,7 +278,9 @@ function App() {
             className={tab === 'admin' ? 'active' : ''}
             onClick={() => setTab('admin')}
             type="button"
+            style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}
           >
+            <ShieldCheck size={16} />
             Quản trị
           </button>
         )}
@@ -264,10 +297,20 @@ function App() {
             isLoggedIn={Boolean(token)}
             onRequestEnroll={setEnrollTarget}
             admin={isAdmin}
+            selectedCourseId={selectedCourseId}
+            onCourseSelected={setSelectedCourseId}
           />
         ))}
 
-      {tab === 'me' && token && <MyEnrollmentsPage currentUser={user} />}
+      {tab === 'me' && token && !isAdmin && (
+        <MyEnrollmentsPage
+          currentUser={user}
+          onGoToCourse={(courseId) => {
+            setSelectedCourseId(courseId);
+            setTab('courses');
+          }}
+        />
+      )}
       {tab === 'admin' && isAdmin && <AdminPage />}
     </div>
   );

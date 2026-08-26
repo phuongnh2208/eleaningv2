@@ -105,9 +105,24 @@ export class EnrollmentRepository extends EnrollmentRepositoryPort {
     });
   }
 
-  async findByUser(userId: number): Promise<EnrollmentWithRelations[]> {
+  async findByUser(
+    userId: number,
+    email?: string,
+  ): Promise<EnrollmentWithRelations[]> {
     return await this.prisma.enrollment.findMany({
-      where: { userId },
+      where: email
+        ? {
+            OR: [{ userId }, { contactEmail: email }],
+          }
+        : { userId },
+      include: enrollmentInclude,
+      orderBy: { createdAt: 'desc' },
+    });
+  }
+
+  async findAll(status?: string): Promise<EnrollmentWithRelations[]> {
+    return await this.prisma.enrollment.findMany({
+      where: status ? { status: status as any } : undefined,
       include: enrollmentInclude,
       orderBy: { createdAt: 'desc' },
     });

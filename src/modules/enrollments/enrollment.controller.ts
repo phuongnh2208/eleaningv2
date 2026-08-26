@@ -5,6 +5,7 @@ import {
   Param,
   ParseIntPipe,
   Post,
+  Query,
   Req,
   UseGuards,
 } from '@nestjs/common';
@@ -17,6 +18,9 @@ import { CreateEnrollmentUseCase } from './use-cases/create-enrollment.usecase';
 import { CreatePublicEnrollmentUseCase } from './use-cases/create-public-enrollment.usecase';
 import { GetEnrollmentUseCase } from './use-cases/get-enrollment.usecase';
 import { ListMyEnrollmentsUseCase } from './use-cases/list-my-enrollments.usecase';
+import { ListAllEnrollmentsUseCase } from './use-cases/list-all-enrollments.usecase';
+import { Roles } from '../auth/decorators/roles.decorator';
+import { RolesGuard } from '../auth/guards/roles.guard';
 
 type AuthenticatedRequest = Request & {
   user: {
@@ -34,6 +38,7 @@ export class EnrollmentController {
     private readonly confirmPaymentUseCase: ConfirmEnrollmentPaymentUseCase,
     private readonly getEnrollmentUseCase: GetEnrollmentUseCase,
     private readonly listMyEnrollmentsUseCase: ListMyEnrollmentsUseCase,
+    private readonly listAllEnrollmentsUseCase: ListAllEnrollmentsUseCase,
   ) {}
 
   // Public, anonymous intake form for the paid-enrollment-request flow
@@ -41,6 +46,14 @@ export class EnrollmentController {
   @Post('public')
   async createPublic(@Body() body: CreatePublicEnrollmentDto) {
     return await this.createPublicEnrollmentUseCase.execute(body);
+  }
+
+  // Admin: list all enrollments (optionally filter by status)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN)
+  @Get('admin')
+  async listAll(@Query('status') status?: string) {
+    return await this.listAllEnrollmentsUseCase.execute(status);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -64,7 +77,10 @@ export class EnrollmentController {
   @UseGuards(JwtAuthGuard)
   @Get('me')
   async listMine(@Req() request: AuthenticatedRequest) {
-    return await this.listMyEnrollmentsUseCase.execute(request.user.id);
+    return await this.listMyEnrollmentsUseCase.execute(
+      request.user.id,
+      request.user.email,
+    );
   }
 
   @UseGuards(JwtAuthGuard)
@@ -77,6 +93,7 @@ export class EnrollmentController {
       request.user.id,
       request.user.role,
       enrollmentId,
+      request.user.email,
     );
   }
 }

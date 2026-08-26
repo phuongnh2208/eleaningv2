@@ -16,6 +16,7 @@ import { CreateEnrollmentUseCase } from './use-cases/create-enrollment.usecase';
 import { CreatePublicEnrollmentUseCase } from './use-cases/create-public-enrollment.usecase';
 import { GetEnrollmentUseCase } from './use-cases/get-enrollment.usecase';
 import { ListMyEnrollmentsUseCase } from './use-cases/list-my-enrollments.usecase';
+import { ListAllEnrollmentsUseCase } from './use-cases/list-all-enrollments.usecase';
 
 @Module({
   imports: [PrismaModule, CourseModule, LessonModule, EmailModule],
@@ -26,6 +27,7 @@ import { ListMyEnrollmentsUseCase } from './use-cases/list-my-enrollments.usecas
     ConfirmEnrollmentPaymentUseCase,
     GetEnrollmentUseCase,
     ListMyEnrollmentsUseCase,
+    ListAllEnrollmentsUseCase,
     EnrollmentRepository,
     {
       provide: EnrollmentRepositoryPort,

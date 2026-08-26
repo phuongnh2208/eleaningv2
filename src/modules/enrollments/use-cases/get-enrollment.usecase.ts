@@ -11,7 +11,12 @@ export class GetEnrollmentUseCase {
     private readonly enrollmentRepository: EnrollmentRepositoryPort,
   ) {}
 
-  async execute(actorId: number, actorRole: Role, enrollmentId: number) {
+  async execute(
+    actorId: number,
+    actorRole: Role,
+    enrollmentId: number,
+    actorEmail?: string,
+  ) {
     if (!Number.isInteger(enrollmentId) || enrollmentId <= 0) {
       throw new AppException(EnrollmentError.INVALID_ID);
     }
@@ -21,7 +26,11 @@ export class GetEnrollmentUseCase {
       throw new AppException(EnrollmentError.NOT_FOUND);
     }
 
-    if (actorRole !== Role.ADMIN && enrollment.userId !== actorId) {
+    const isOwner =
+      enrollment.userId === actorId ||
+      (actorEmail && enrollment.contactEmail === actorEmail);
+
+    if (actorRole !== Role.ADMIN && !isOwner) {
       throw new AppException(EnrollmentError.FORBIDDEN);
     }
 

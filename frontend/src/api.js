@@ -58,6 +58,12 @@ export const getCourses = (admin = false) =>
 
 export const getAdminCourses = () => client.get('/courses/admin').then((r) => r.data);
 
+export const updateCourse = (courseId, body) =>
+  client.patch(`/courses/${courseId}`, body).then((r) => r.data);
+
+export const deleteCourse = (courseId) =>
+  client.delete(`/courses/${courseId}`).then((r) => r.data);
+
 export const getCourse = (courseId) =>
   client.get(`/courses/${courseId}`).then((r) => r.data);
 
@@ -73,6 +79,9 @@ export const getLessonVideo = (lessonId) =>
 // ---- Enrollments ----
 export const getMyEnrollments = () =>
   client.get('/enrollments/me').then((r) => r.data);
+
+export const getAdminEnrollments = (status) =>
+  client.get('/enrollments/admin', { params: status ? { status } : {} }).then((r) => r.data);
 
 export const createEnrollment = (courseId) =>
   client.post(`/enrollments/courses/${courseId}`).then((r) => r.data);
