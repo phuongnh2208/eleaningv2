@@ -12,8 +12,6 @@ import {
   Coins,
   Tag,
   Clock,
-  Copy,
-  Check,
 } from "lucide-react";
 import * as api from "../api.js";
 
@@ -33,7 +31,6 @@ export default function PublicEnrollPage({ presetCourse, onDone }) {
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
   const [submitting, setSubmitting] = useState(false);
-  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     api
@@ -68,21 +65,15 @@ export default function PublicEnrollPage({ presetCourse, onDone }) {
     }
   }
 
-  function copyTransferNote() {
-    const note = `DK${result.id} ${form.contactEmail}`;
-    navigator.clipboard?.writeText(note);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  }
-
   if (result) {
-    const statusInfo = STATUS_DISPLAY[result.status] || {
-      label: result.status,
+    const enrollment = result.enrollment || result;
+    const enrollmentId = enrollment.id;
+    const statusInfo = STATUS_DISPLAY[enrollment.status] || {
+      label: enrollment.status || "Chờ xác nhận thanh toán",
       class: "status-pending",
       icon: Clock,
     };
     const StatusIcon = statusInfo.icon;
-    const transferNote = `DK${result.id} ${form.contactEmail}`;
 
     return (
       <div className="card enroll-result-card">
@@ -103,7 +94,7 @@ export default function PublicEnrollPage({ presetCourse, onDone }) {
         >
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 8 }}>
             <span style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: 14 }}>
-              <Tag size={16} /> Mã đăng ký: <strong>#DK-{result.id}</strong>
+              <Tag size={16} /> Mã đăng ký: <strong>#{enrollmentId}</strong>
             </span>
             <span className={`status-pill ${statusInfo.class}`} style={{ display: "inline-flex", alignItems: "center", gap: 4 }}>
               <StatusIcon size={13} /> {statusInfo.label}
@@ -111,7 +102,7 @@ export default function PublicEnrollPage({ presetCourse, onDone }) {
           </div>
 
           <div style={{ fontSize: 13, borderTop: "1px solid rgba(40, 77, 108, 0.15)", paddingTop: 8 }}>
-            Khóa học: <strong>{selectedCourse?.title || `Khóa học #${result.courseId}`}</strong>
+            Khóa học: <strong>{selectedCourse?.title || `Khóa học #${enrollment.courseId}`}</strong>
             {selectedCourse?.price && (
               <span style={{ marginLeft: 10, color: "var(--accent)" }}>
                 ({Number(selectedCourse.price).toLocaleString("vi-VN")} {selectedCourse.currency || "VND"})
@@ -121,37 +112,27 @@ export default function PublicEnrollPage({ presetCourse, onDone }) {
         </div>
 
         <div className="enroll-next-steps">
-          <h3>Hướng dẫn thanh toán & Kích hoạt</h3>
+          <h3>Các bước tiếp theo</h3>
           <ol className="steps-list">
-            <li>
-              <strong>Chuyển khoản học phí</strong>
-              <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 4 }}>
-                Cú pháp chuyển khoản: <code style={{ fontSize: 13, fontWeight: 700 }}>{transferNote}</code>
-                <button
-                  type="button"
-                  onClick={copyTransferNote}
-                  className="filter-btn"
-                  style={{ display: "inline-flex", alignItems: "center", gap: 4, padding: "3px 10px", fontSize: 11 }}
-                >
-                  {copied ? <Check size={12} color="#16a34a" /> : <Copy size={12} />}
-                  {copied ? "Đã copy" : "Copy cú pháp"}
-                </button>
-              </div>
-            </li>
             <li>
               <strong>Kiểm tra email</strong> <em>{form.contactEmail}</em>
               <br />
-              Hệ thống đã gửi thông tin thanh toán chi tiết tới hộp thư của bạn.
+              Hệ thống đã tự động gửi email hướng dẫn gồm thông tin số tài khoản, số tiền và nội dung chuyển khoản chi tiết tới hộp thư của bạn.
             </li>
             <li>
-              <strong>Admin duyệt & Cấp quyền xem</strong>
+              <strong>Chuyển khoản & Phản hồi xác nhận</strong>
               <br />
-              Sau khi nhận được học phí, Admin sẽ kích hoạt khóa học và chia sẻ quyền xem video cho Gmail của bạn.
+              Thực hiện thanh toán theo thông tin trong email, sau đó phản hồi lại email kèm ảnh chụp biên lai/giao dịch.
+            </li>
+            <li>
+              <strong>Admin duyệt & Cấp quyền Gmail</strong>
+              <br />
+              Sau khi đối soát học phí, Admin sẽ kích hoạt khóa học và cấp quyền xem video Google Drive cho Gmail của bạn.
             </li>
             <li>
               <strong>Đăng nhập và bắt đầu học</strong>
               <br />
-              Đăng nhập bằng Gmail <em>{form.contactEmail}</em> để mở toàn bộ video bài học.
+              Đăng nhập bằng đúng Gmail <em>{form.contactEmail}</em> để mở toàn bộ video bài học.
             </li>
           </ol>
         </div>

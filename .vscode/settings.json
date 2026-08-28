@@ -15,6 +15,9 @@
   },
   "[json]": {
     "editor.defaultFormatter": "rvest.vs-code-prettier-eslint"
-  }
+  },
+  "workbench.iconTheme": "symbols",
+  "workbench.preferredDarkColorTheme": "Dark Modern",
+  "workbench.preferredHighContrastColorTheme": "Default High Contrast"
 }
 

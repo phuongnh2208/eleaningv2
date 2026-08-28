@@ -16,6 +16,10 @@ export class CreateCourseDto {
   @IsString()
   thumbnailUrl?: string;
 
+  @IsOptional()
+  @IsString()
+  driveFolderUrl?: string;
+
   @IsEnum(CourseAccessType)
   accessType!: CourseAccessType;
 

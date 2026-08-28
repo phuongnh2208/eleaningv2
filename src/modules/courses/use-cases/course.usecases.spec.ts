@@ -8,6 +8,7 @@ const course = {
   slug: 'nestjs-basic',
   description: 'Course description',
   thumbnailUrl: null,
+  driveFolderUrl: null,
   accessType: CourseAccessType.FREE,
   price: null,
   currency: 'VND',

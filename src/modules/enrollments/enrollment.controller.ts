@@ -14,6 +14,7 @@ import { Role } from 'src/generated/prisma/client';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CreatePublicEnrollmentDto } from './dto/create-public-enrollment.dto';
 import { ConfirmEnrollmentPaymentUseCase } from './use-cases/confirm-enrollment-payment.usecase';
+import { CancelEnrollmentUseCase } from './use-cases/cancel-enrollment.usecase';
 import { CreateEnrollmentUseCase } from './use-cases/create-enrollment.usecase';
 import { CreatePublicEnrollmentUseCase } from './use-cases/create-public-enrollment.usecase';
 import { GetEnrollmentUseCase } from './use-cases/get-enrollment.usecase';
@@ -36,6 +37,7 @@ export class EnrollmentController {
     private readonly createEnrollmentUseCase: CreateEnrollmentUseCase,
     private readonly createPublicEnrollmentUseCase: CreatePublicEnrollmentUseCase,
     private readonly confirmPaymentUseCase: ConfirmEnrollmentPaymentUseCase,
+    private readonly cancelEnrollmentUseCase: CancelEnrollmentUseCase,
     private readonly getEnrollmentUseCase: GetEnrollmentUseCase,
     private readonly listMyEnrollmentsUseCase: ListMyEnrollmentsUseCase,
     private readonly listAllEnrollmentsUseCase: ListAllEnrollmentsUseCase,
@@ -72,6 +74,18 @@ export class EnrollmentController {
     @Param('id', ParseIntPipe) enrollmentId: number,
   ) {
     return await this.confirmPaymentUseCase.execute(request.user, enrollmentId);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post(':id/cancel')
+  async cancel(
+    @Req() request: AuthenticatedRequest,
+    @Param('id', ParseIntPipe) enrollmentId: number,
+  ) {
+    return await this.cancelEnrollmentUseCase.execute(
+      request.user,
+      enrollmentId,
+    );
   }
 
   @UseGuards(JwtAuthGuard)

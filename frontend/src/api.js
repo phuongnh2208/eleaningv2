@@ -58,6 +58,16 @@ export const getCourses = (admin = false) =>
 
 export const getAdminCourses = () => client.get('/courses/admin').then((r) => r.data);
 
+// ---- Users (Admin) ----
+export const getAdminUsers = (params) =>
+  client.get('/users', { params }).then((r) => r.data);
+
+export const updateAdminUser = (userId, body) =>
+  client.patch(`/users/${userId}`, body).then((r) => r.data);
+
+export const deleteAdminUser = (userId) =>
+  client.delete(`/users/${userId}`).then((r) => r.data);
+
 export const updateCourse = (courseId, body) =>
   client.patch(`/courses/${courseId}`, body).then((r) => r.data);
 
@@ -69,6 +79,18 @@ export const getCourse = (courseId) =>
 
 export const getLessons = (courseId) =>
   client.get(`/courses/${courseId}/lessons`).then((r) => r.data);
+
+export const getAdminCourseLessons = (courseId) =>
+  client.get(`/courses/${courseId}/lessons/admin`).then((r) => r.data);
+
+export const createLesson = (courseId, body) =>
+  client.post(`/courses/${courseId}/lessons`, body).then((r) => r.data);
+
+export const updateLesson = (lessonId, body) =>
+  client.patch(`/lessons/${lessonId}`, body).then((r) => r.data);
+
+export const deleteLesson = (lessonId) =>
+  client.delete(`/lessons/${lessonId}`).then((r) => r.data);
 
 // Video is only ever served through this single protected route — there is
 // no separate public/private/allowed tier at the API level. JWT is always
@@ -105,6 +127,12 @@ export const confirmEnrollmentPayment = (enrollmentId) =>
   client
     .post(`/enrollments/${enrollmentId}/confirm-payment`)
     .then((r) => r.data);
+
+export const cancelEnrollment = (enrollmentId) =>
+  client
+    .post(`/enrollments/${enrollmentId}/cancel`)
+    .then((r) => r.data);
+
 
 export const getEnrollment = (enrollmentId) =>
   client.get(`/enrollments/${enrollmentId}`).then((r) => r.data);

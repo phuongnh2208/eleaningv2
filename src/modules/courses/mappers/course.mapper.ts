@@ -8,6 +8,7 @@ export class CourseMapper {
       slug: course.slug,
       description: course.description,
       thumbnailUrl: course.thumbnailUrl,
+      driveFolderUrl: course.driveFolderUrl,
       accessType: course.accessType,
       price: course.price ? Number(course.price.toString()) : null,
       currency: course.currency,

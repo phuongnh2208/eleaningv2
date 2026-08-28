@@ -10,6 +10,7 @@ export class LessonMapper {
       position: lesson.position,
       accessType: lesson.accessType,
       isPublished: lesson.isPublished,
+      hasVideo: Boolean(lesson.video),
       createdAt: lesson.createdAt,
       updatedAt: lesson.updatedAt,
     };

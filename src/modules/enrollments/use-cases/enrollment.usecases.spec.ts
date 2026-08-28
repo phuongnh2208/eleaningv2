@@ -27,6 +27,7 @@ const course = {
   slug: 'nestjs-co-ban',
   description: null,
   thumbnailUrl: null,
+  driveFolderUrl: null,
   accessType: CourseAccessType.FREE,
   price: null,
   currency: 'VND',

@@ -62,4 +62,14 @@ export const EnrollmentError = {
       'Khóa học này miễn phí — vui lòng đăng nhập và tự đăng ký tại POST /enrollments/courses/:courseId',
     statusCode: HttpStatus.BAD_REQUEST,
   },
+  ALREADY_CANCELLED: {
+    code: 'ENROLLMENT.ALREADY_CANCELLED',
+    message: 'Bản đăng ký đã bị hủy trước đó',
+    statusCode: HttpStatus.CONFLICT,
+  },
+  CANNOT_CANCEL_ACTIVE: {
+    code: 'ENROLLMENT.CANNOT_CANCEL_ACTIVE',
+    message: 'Không thể hủy bản đăng ký đã kích hoạt thành công',
+    statusCode: HttpStatus.BAD_REQUEST,
+  },
 } as const;

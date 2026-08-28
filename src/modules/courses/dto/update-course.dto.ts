@@ -19,6 +19,10 @@ export class UpdateCourseDto {
   thumbnailUrl?: string;
 
   @IsOptional()
+  @IsString()
+  driveFolderUrl?: string;
+
+  @IsOptional()
   @IsEnum(CourseAccessType)
   accessType?: CourseAccessType;
 

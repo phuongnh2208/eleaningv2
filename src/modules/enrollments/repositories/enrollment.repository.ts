@@ -193,13 +193,22 @@ export class EnrollmentRepository extends EnrollmentRepositoryPort {
   }
 
   async cancel(enrollmentId: number): Promise<EnrollmentWithRelations> {
-    return await this.prisma.enrollment.update({
-      where: { id: enrollmentId },
-      data: {
-        status: EnrollmentStatus.CANCELLED,
-        cancelledAt: new Date(),
-      },
-      include: enrollmentInclude,
+    return await this.prisma.$transaction(async (transaction) => {
+      await transaction.payment.updateMany({
+        where: { enrollmentId, status: PaymentStatus.PENDING },
+        data: {
+          status: PaymentStatus.FAILED,
+        },
+      });
+
+      return await transaction.enrollment.update({
+        where: { id: enrollmentId },
+        data: {
+          status: EnrollmentStatus.CANCELLED,
+          cancelledAt: new Date(),
+        },
+        include: enrollmentInclude,
+      });
     });
   }
 }

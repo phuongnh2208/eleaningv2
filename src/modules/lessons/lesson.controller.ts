@@ -42,6 +42,13 @@ export class LessonController {
 
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.ADMIN)
+  @Get('courses/:courseId/lessons/admin')
+  async listAdmin(@Param('courseId', ParseIntPipe) courseId: number) {
+    return await this.listLessonsUseCase.execute(courseId, true);
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN)
   @Post('courses/:courseId/lessons')
   async create(
     @Param('courseId', ParseIntPipe) courseId: number,

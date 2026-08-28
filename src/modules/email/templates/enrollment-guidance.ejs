@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hướng dẫn thanh toán khóa học</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      line-height: 1.6;
+      color: #202124;
+      background-color: #f8f9fa;
+      margin: 0;
+      padding: 20px;
+    }
+    .wrapper {
+      max-width: 600px;
+      margin: 0 auto;
+      background: #ffffff;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      border: 1px solid #dadce0;
+    }
+    .header {
+      background: linear-gradient(135deg, #1a73e8, #1557b0);
+      color: #ffffff;
+      padding: 24px;
+      text-align: center;
+    }
+    .header h1 {
+      margin: 0;
+      font-size: 20px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
+    .body-content {
+      padding: 24px;
+    }
+    .greeting {
+      font-size: 16px;
+      margin-bottom: 16px;
+    }
+    .intro {
+      color: #5f6368;
+      margin-bottom: 20px;
+    }
+    .payment-card {
+      background-color: #f1f3f4;
+      border-radius: 8px;
+      padding: 16px 20px;
+      margin-bottom: 20px;
+    }
+    .payment-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: #1a73e8;
+      margin-top: 0;
+      margin-bottom: 12px;
+      border-bottom: 1px solid #dadce0;
+      padding-bottom: 8px;
+    }
+    .info-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 6px 0;
+      font-size: 14px;
+    }
+    .info-label {
+      color: #5f6368;
+      font-weight: 500;
+    }
+    .info-value {
+      font-weight: 600;
+      color: #202124;
+      text-align: right;
+    }
+    .amount-highlight {
+      color: #d93025;
+      font-size: 16px;
+      font-weight: 700;
+    }
+    .transfer-syntax {
+      background: #e8f0fe;
+      color: #1a73e8;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-family: monospace;
+      font-size: 14px;
+      font-weight: bold;
+    }
+    .alert-box {
+      border-radius: 6px;
+      padding: 12px 16px;
+      margin-bottom: 16px;
+      font-size: 13.5px;
+    }
+    .alert-warning {
+      background-color: #fef7e0;
+      border-left: 4px solid #f9ab00;
+      color: #5f6368;
+    }
+    .alert-info {
+      background-color: #e8f0fe;
+      border-left: 4px solid #1a73e8;
+      color: #174ea6;
+    }
+    .alert-title {
+      font-weight: 600;
+      margin-bottom: 4px;
+      display: block;
+    }
+    .footer {
+      background-color: #f8f9fa;
+      padding: 16px 24px;
+      text-align: center;
+      font-size: 12px;
+      color: #70757a;
+      border-top: 1px solid #dadce0;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <div class="header">
+      <h1>HƯỚNG DẪN HOÀN TẤT ĐĂNG KÝ HỌC</h1>
+    </div>
+
+    <div class="body-content">
+      <div class="greeting">
+        Xin chào <strong><%= contactName %></strong>,
+      </div>
+
+      <div class="intro">
+        Bạn vừa gửi biểu mẫu đăng ký khóa học <strong>"<%= courseTitle %>"</strong> (Mã đăng ký: <strong>#<%= enrollmentId %></strong>). Vui lòng hoàn tất thanh toán học phí theo thông tin dưới đây:
+      </div>
+
+      <div class="payment-card">
+        <div class="payment-title">🏦 THÔNG TIN CHUYỂN KHOẢN HỌC PHÍ</div>
+        <table style="width: 100%; border-collapse: collapse;">
+          <tr>
+            <td style="padding: 6px 0; color: #5f6368; font-size: 14px;">Ngân hàng:</td>
+            <td style="padding: 6px 0; font-weight: 600; text-align: right; font-size: 14px;"><%= bankName %></td>
+          </tr>
+          <tr>
+            <td style="padding: 6px 0; color: #5f6368; font-size: 14px;">Chủ tài khoản:</td>
+            <td style="padding: 6px 0; font-weight: 600; text-align: right; font-size: 14px;"><%= bankAccountName %></td>
+          </tr>
+          <tr>
+            <td style="padding: 6px 0; color: #5f6368; font-size: 14px;">Số tài khoản:</td>
+            <td style="padding: 6px 0; font-weight: 700; text-align: right; font-size: 15px; color: #1a73e8;"><%= bankAccountNumber %></td>
+          </tr>
+          <tr>
+            <td style="padding: 6px 0; color: #5f6368; font-size: 14px;">Số tiền cần thanh toán:</td>
+            <td style="padding: 6px 0; font-weight: 700; text-align: right; font-size: 16px; color: #d93025;"><%= amount %> <%= currency %></td>
+          </tr>
+          <tr>
+            <td style="padding: 6px 0; color: #5f6368; font-size: 14px;">Nội dung chuyển khoản:</td>
+            <td style="padding: 6px 0; text-align: right; font-size: 14px;"><span class="transfer-syntax"><%= transferNote %></span></td>
+          </tr>
+        </table>
+      </div>
+
+      <!-- Cách xác nhận đã chuyển khoản -->
+      <div class="alert-box alert-warning">
+        <span class="alert-title" style="color: #b06000;">📌 Cách xác nhận đã chuyển khoản:</span>
+        Sau khi chuyển khoản thành công, bạn chỉ cần <strong>trả lời (Reply) trực tiếp email này kèm ảnh chụp biên lai/giao dịch</strong> để Ban quản trị đối soát và kích hoạt khóa học cho bạn.
+      </div>
+
+      <!-- Hướng dẫn sử dụng Gmail để tham gia học -->
+      <div class="alert-box alert-info">
+        <span class="alert-title" style="color: #174ea6;">✉️ Hướng dẫn sử dụng Gmail để tham gia học:</span>
+        Quyền truy cập video bài giảng (Google Drive) sẽ được cấp cho chính xác tài khoản Gmail: <strong><%= recipient %></strong>.<br>
+        Khi vào học, bạn hãy dùng đúng địa chỉ Gmail này để đăng nhập hệ thống bằng Google.
+      </div>
+
+      <!-- Thông tin hình thức và thời gian học -->
+      <div style="margin-top: 16px; font-size: 14px; color: #3c4043;">
+        <strong>⏰ Hình thức & Thời gian học:</strong><br>
+        <span><%= scheduleInfo %></span>
+      </div>
+    </div>
+
+    <div class="footer">
+      <p style="margin: 0 0 6px 0;">Hệ thống Đào tạo & Học trực tuyến E-Learning V2</p>
+      <p style="margin: 0;">Nếu cần hỗ trợ, vui lòng phản hồi trực tiếp email này.</p>
+    </div>
+  </div>
+</body>
+</html>
